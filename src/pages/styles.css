@@ -1,0 +1,53 @@
+ion-content {
+  --background: none;
+  background: url('/fondo.jpg') no-repeat center center / cover;
+}
+.center{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.portada-container{
+  text-align: center;
+  color: white;
+  width: 90%;
+}
+.logo{
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.subtitle{
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+.btn{
+  margin-top: 10px;
+  border-radius: 1000px;
+}
+.form-container{
+  width: 100vw;
+}
+.card{
+  background: rgba(255, 255, 255, 0.95); 
+  color: #1B4332;
+  padding: 10px;
+}
+.input{
+  border-radius: 10px;
+  color: #2b2b2b;
+  background-color: #f0f0f0;
+  border: solid 1px #414141;
+}
+.btn{
+  --background: #232323;
+  color: white;
+}
+.link{
+  text-align: center;
+  margin: 10px;
+  color: gray;
+  font-size: 14px;
+}

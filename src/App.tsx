@@ -35,16 +35,17 @@ import './theme/variables.css';
 
 setupIonicReact();
 
+import Portada from './pages/Portada';
+import Login from './pages/Login';
+import Registro from './pages/Registro';
+
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
+        <Route exact path="/" component={Portada} />
+        <Route path="/login" component={Login} />
+        <Route path="/registro" component={Registro} />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
