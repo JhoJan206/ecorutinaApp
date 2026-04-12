@@ -1,9 +1,34 @@
 import {IonPage, IonContent, IonInput, IonButton} from '@ionic/react';
 import { useHistory } from 'react-router';
+import {useState} from 'react'; //Guardar y actualizar datos de un componente 
 import './styles.css';
 
 const Login: React.FC = () => {
     const history = useHistory();
+    const [correo, setCorreo] = useState('');
+    const [password, setPassword] = useState('');
+
+
+    const handleLogin = async () => {
+        try {
+            const res = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify({correo, password}) 
+            });
+            
+            const data = await res.json();
+            if(res.ok){
+                alert(`Bienvenido, ${data.usuario}`);
+                history.push('/home');
+            }else {
+                alert(data.mensaje);
+            }
+        }catch (error) {
+            console.error("Error", error); 
+        }
+    }
+
 
     return (
         <IonPage>
@@ -20,12 +45,12 @@ const Login: React.FC = () => {
                             <div className="card">
 
                                 <h3>Correo electrónico</h3>
-                                <IonInput className="input" placeholder="Correo electrónico" />
+                                <IonInput className="input" placeholder="Correo electrónico" onIonChange={(e) => setCorreo(e.detail.value!)} />
                                 <h3>Contraseña</h3>
-                                <IonInput className="input" type="password" placeholder="Contraseña" />
+                                <IonInput className="input" type="password" placeholder="Contraseña" onIonChange={(e) => setPassword(e.detail.value!)} />
                                 <p>¿Olvidaste tu contraseña?</p>
 
-                                <IonButton expand="block" className="btn">Iniciar sesion</IonButton>
+                                <IonButton expand="block" className="btn" onClick={handleLogin}>Iniciar sesion</IonButton>
 
                                 <small>--- o continuar con ---</small>
                                 <IonButton expand="block" className="btn">🌎 Google</IonButton>
