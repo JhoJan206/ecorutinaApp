@@ -41,7 +41,7 @@ const Home: React.FC = () => {
                 <main>
                     <h3>Rutinas de hoy</h3>
 
-                    <div className="card">
+                    <div className="card-progress">
                         <h4>Ahorro de agua</h4>
                         <p>0 de 5 hábitos completados</p>
                         <div className="progress">
@@ -50,7 +50,7 @@ const Home: React.FC = () => {
                         <small>0% completado</small>
                     </div>
 
-                    <div className="card">
+                    <div className="card-progress">
                         <h4>Energía responsable</h4>
                         <p>0 de 4 hábitos completos</p>
                         <div className="progress">
@@ -65,7 +65,7 @@ const Home: React.FC = () => {
                         <div className="mini-card">📒<p>Mis Rutinas</p></div>
                         <div className="mini-card">🏆<p>Recompensas</p></div>
                         <div className="mini-card">🌎<p>Simulador</p></div>
-                        <div className="mini-card">👤<p>Perfil</p></div>
+                        <div className="mini-card" onClick={() => history.push('/Perfil')}>👤<p>Perfil</p></div>
                     </div>
                 </main>
                 

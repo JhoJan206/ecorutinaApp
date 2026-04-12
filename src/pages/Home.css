@@ -39,7 +39,7 @@ main{
     width: 30%;
     text-align: center;
 }
-.card {
+.card-progress {
     background: #f3f3f3;
     padding: 15px;
     border-radius: 15px;

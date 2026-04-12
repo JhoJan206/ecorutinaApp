@@ -37,6 +37,7 @@ import Portada from './pages/Portada';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Home from './pages/Home';
+import Perfil from './pages/Perfil';
 
 const App: React.FC = () => (
   <IonApp>
@@ -46,6 +47,7 @@ const App: React.FC = () => (
         <Route path="/login" component={Login} />
         <Route path="/registro" component={Registro} />
         <Route path="/home" component={Home} />
+        <Route path="/perfil" component={Perfil} />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
