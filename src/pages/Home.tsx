@@ -7,10 +7,19 @@ import { playCircle, radio, library, search } from 'ionicons/icons';
 
 
 import { useHistory } from 'react-router';
+//useState crea y guarda en la variable nombre.
+//useEffect hace que se ejecute una sola vez y lo guarde en un array, para que no se esté ejecutando todo el tiempo.
+import { useState, useEffect } from 'react';
 import './Home.css';
 
 const Home: React.FC = () => {
     const history = useHistory();
+    const [nombre, setNombre] = useState('');  //Colocamos el nombre en la variable "nombre" mediante el metodo setNombre
+
+    useEffect(() => {
+      const nombreGuardado = localStorage.getItem('nombre');
+      if (nombreGuardado) setNombre(nombreGuardado);
+    }, [])
     
     return (
         <IonPage>
@@ -18,8 +27,8 @@ const Home: React.FC = () => {
                 <header>
                     <div className='header-user'>
                         <div><p>Buenos días,</p>
-                        <h2><strong>Pepito Perez</strong></h2></div>
-                        <div><div className="avatar">PZ</div></div>
+                        <h2><strong>{nombre}</strong></h2></div>
+                        <div><div className="avatar">{nombre.charAt(0).toUpperCase()}</div></div>
                         
                         
                     </div>

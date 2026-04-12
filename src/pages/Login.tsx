@@ -19,6 +19,9 @@ const Login: React.FC = () => {
             
             const data = await res.json();
             if(res.ok){
+                localStorage.setItem('nombre', data.usuario); //Guardamos el nombre del usuario
+                localStorage.setItem('correo', correo); //Guardar el correo
+                localStorage.setItem('fechaRegistro', data.fechaRegistro); 
                 alert(`Bienvenido, ${data.usuario}`);
                 history.push('/home');
             }else {

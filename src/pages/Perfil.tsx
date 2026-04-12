@@ -1,20 +1,29 @@
 import { IonPage, IonContent, IonButton, IonInput } from '@ionic/react';
 import { useHistory } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 import './Perfil.css';
 
 const Perfil: React.FC = () => {
     const history = useHistory();
-
     const [editando, setEditando] = useState(false);
 
     const [datos, setDatos] = useState({
-        nombre: 'Pepito Pérez',
-        correo: 'juan@correo.com',
+        nombre: '',
+        correo: '',
         universidad: 'UDES, Bucaramanga',
         motivacion: 'Cuidar el agua',
-        miembro: 'Marzo 2026'
+        miembro: ''
     });
+
+    useEffect(() => {
+        const nombre = localStorage.getItem('nombre');
+        const correo = localStorage.getItem('correo');
+        const fecha = localStorage.getItem('fechaRegistro');
+        if (nombre) setDatos(prev => ({...prev, nombre}));
+        if (correo) setDatos(prev => ({...prev, correo}));
+        if (fecha) setDatos(prev =>({...prev, miembro: new Date(fecha).toLocaleDateString('es-CO', {month: 'long', year: 'numeric'}) }))
+    }, []); 
 
     const handleChange = (campo: string, valor: string) => {
         setDatos({ ...datos, [campo]: valor });
