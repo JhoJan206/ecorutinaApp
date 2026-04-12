@@ -9,12 +9,13 @@ Validación de usuarios existentes e insertación de usuarios nuevos.
 */
 
 
-const express = require("express");
+import express from "express";
 //Cors para que no haga peticiones a otro servidor 
-const cors = require("cors");
-const app = express(); 
+import cors from "cors";
 //Llamar a la conexión de la base de datos
-const bd = require("./bd");
+import bd from "./bd.js"; 
+
+const app = express(); 
 
 app.use(cors());
 app.use(express.json());

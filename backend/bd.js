@@ -6,7 +6,7 @@ Conexión a la base de datos LOCAL del equipo de Juan Moreno
 -JuanMoreno 
 */
 
-const mysql = require("mysql2"); 
+import mysql from "mysql2"; 
 
 const conexion = mysql.createConnection({
     host: "127.0.0.1",
@@ -23,4 +23,4 @@ conexion.connect((err) => {
     console.log("Conexión exitosa a la base de datos");
 });
 
-module.exports = conexion; 
+export default conexion; 
