@@ -1,0 +1,60 @@
+ion-content {
+    --background: none;
+    background: url('/fondo.jpg') no-repeat center center / cover;
+}
+.perfil-main{
+    background-color: #F0FBF4;
+    padding: 40px;
+    height: 72%;
+}
+.input-edit {
+  background: white;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px 0;
+  color: #3a5a40;
+}
+.perfil-header {
+  color: white;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  height: 28%;
+}
+.btn-back {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+.avatar-grande {
+  width: 70px;
+  height: 70px;
+  background: #6dbf9b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto;
+  font-weight: bold;
+}
+.nivel {
+  border: 1px solid white;
+  background-color: #d9d9d92d;
+  border-radius: 20px;
+  padding: 5px 10px;
+  display: inline-block;
+  font-size: 14px;
+}
+.info-card {
+  background: #f3f3f3;
+  border-radius: 15px;
+  padding: 15px;
+  color: #3a5a40;
+  border: solid 1px #ccc;
+}
+.info-item {
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+}

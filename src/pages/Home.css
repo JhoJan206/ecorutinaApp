@@ -1,0 +1,71 @@
+ion-content {
+    --background: none;
+    background: url('/fondo.jpg') no-repeat center center / cover;
+}
+.header-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
+}
+.avatar {
+    background: #6dbf9b;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+header {
+    padding: 15px;
+}
+main{
+    background-color: #F0FBF4;
+    color: #3a5a40;
+    padding: 5px;
+}
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -20px;
+}
+.stat-card {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(5px);
+    padding: 10px;
+    border-radius: 15px;
+    width: 30%;
+    text-align: center;
+}
+.card-progress {
+    background: #f3f3f3;
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 10px;
+}
+.progress {
+    height: 8px;
+    background: #ccc;
+    border-radius: 10px;
+    margin: 8px 0;
+}
+.bar {
+    height: 100%;
+    background: #6dbf9b;
+    border-radius: 10px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+.mini-card {
+    background: #f3f3f3;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    font-size: 18px;
+}
