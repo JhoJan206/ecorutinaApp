@@ -51,7 +51,7 @@ app.post("/registro", (req, res) => {
 
         //Si el usuario no existe llega aquí             
         
-        const insertQuery = "INSERT INTO usuarios (correo, password, nombre) VALUES (?, ?, ?)"; 
+        const insertQuery = "INSERT INTO usuarios (correo, password, nombre, fechaRegistro) VALUES (?, ?, ?, NOW())"; 
         bd.query(insertQuery, [correo, password, usuario], (err, result) => {
             if(err){
                console.error("Error al insertar:", err); 
@@ -81,6 +81,9 @@ app.post("/login", (req, res) => {
 
         
         console.log("Usuario encontrado:", result[0]); 
-        res.json({mensaje: "Login exitoso", usuario: result[0].nombre}); //(usuario:) es lo que se manda al front para que te diga "Bienvenido [usuario]"
+        res.json({mensaje: "Login exitoso", usuario: result[0].nombre, fechaRegistro: result[0].fechaRegistro}); //(usuario:) es lo que se manda al front para que te diga "Bienvenido [usuario]"
     });
 });
+
+
+//Actualizar nombre y correo 
