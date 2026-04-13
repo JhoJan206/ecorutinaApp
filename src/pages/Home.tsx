@@ -28,7 +28,7 @@ const Home: React.FC = () => {
                     <div className='header-user'>
                         <div><p>Buenos días,</p>
                         <h2><strong>{nombre}</strong></h2></div>
-                        <div><div className="avatar">{nombre.charAt(0).toUpperCase()}</div></div>
+                        <div onClick={() => history.push('/Perfil')}><div className="avatar">{nombre.charAt(0).toUpperCase()}</div></div>
                         
                         
                     </div>

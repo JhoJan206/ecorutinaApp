@@ -26,6 +26,14 @@ ion-content {
   position: absolute;
   left: 10px;
   top: 10px;
+  --background: #77777786;
+  --color: #fff;            
+  --border-radius: 50px;    
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color: rgba(0, 0, 0, 0.555); /* o el color que quieras */
 }
 .avatar-grande {
   width: 70px;
@@ -57,4 +65,7 @@ ion-content {
   justify-content: space-between;
   padding: 10px 0;
   border-top: 1px solid #ccc;
+}
+.btn-cerrarSesion{
+    margin-top: 20px;
 }

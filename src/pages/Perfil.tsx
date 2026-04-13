@@ -89,9 +89,11 @@ const Perfil: React.FC = () => {
                         </div>
 
                         <div className="btn-container">
-                            <IonButton onClick={() => setEditando(!editando)} expand="block">{editando ? 'Guardar' : 'Editar'}</IonButton>
+                            <IonButton className='btn' onClick={() => setEditando(!editando)} expand="block">{editando ? 'Guardar' : 'Editar'}</IonButton>
                         </div>
+                        
                     </div>
+                    <IonButton className='btn-cerrarSesion' color="danger" expand="block" onClick={() => history.push('/login')}>Cerrar Sesión</IonButton>
                 </main>
 
             </IonContent>

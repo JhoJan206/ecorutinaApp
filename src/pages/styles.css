@@ -2,6 +2,11 @@ ion-content {
   --background: none;
   background: url('/fondo.jpg') no-repeat center center / cover;
 }
+.header-logs{
+  padding: 50px;
+  text-align: center;
+  height: 28%;
+}
 .center{
   display: flex;
   flex-direction: column;
@@ -29,11 +34,12 @@ ion-content {
 }
 .form-container{
   width: 100vw;
+  height: 72%;
+  background: rgba(255, 255, 255, 0.95); 
 }
 .card{
-  background: rgba(255, 255, 255, 0.95); 
   color: #1B4332;
-  padding: 10px;
+  padding: 20px;
 }
 .input{
   border-radius: 10px;
@@ -41,13 +47,13 @@ ion-content {
   background-color: #f0f0f0;
   border: solid 1px #414141;
 }
-.btn{
-  --background: #232323;
-  color: white;
-}
 .link{
   text-align: center;
   margin: 10px;
   color: gray;
   font-size: 14px;
+}
+.btn{
+  --background: #232323;
+  color: white;
 }

@@ -11,7 +11,7 @@ const Portada: React.FC = () => {
             <div className="center">
 
             <div className="portada-container">
-                <h1 className="logo">EcoRutina</h1>
+                <img src="/Logo.png" alt="" />
                 <p className="subtitle">
                 Pequeños hábitos, grandes cambios para el planeta
                 </p>
