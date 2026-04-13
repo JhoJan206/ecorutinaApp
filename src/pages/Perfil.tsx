@@ -119,14 +119,12 @@ const Perfil: React.FC = () => {
                         </div>
 
                         <div className="btn-container">
-<<<<<<< Updated upstream
-                            <IonButton className='btn' onClick={() => setEditando(!editando)} expand="block">{editando ? 'Guardar' : 'Editar'}</IonButton>
-=======
-                            <IonButton onClick={() => {
+
+                            <IonButton className='btn' onClick={() => {
                                 if (editando) handleGuardar();
                                 setEditando(!editando); 
                             }}  expand="block"> {editando ? 'Guardar' : 'Editar'}</IonButton>
->>>>>>> Stashed changes
+
                         </div>
                         
                     </div>
