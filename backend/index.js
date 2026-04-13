@@ -65,8 +65,8 @@ app.post("/registro", (req, res) => {
 //Iniciar sesión 
 app.post("/login", (req, res) => {
     const {correo, password} = req.body; 
-    //Si están vacios
-    if(!correo || !password) return res.status(400).json({mensaje: "Datos incompletos"});
+    //Si están vacios o incorrectos
+    if(!correo || !password) return res.status(400).json({mensaje: "Datos invalidos"});
 
     //Consulta a la base de datos 
     const query = "SELECT * FROM usuarios WHERE correo = ? AND password = ?"; 
@@ -87,3 +87,16 @@ app.post("/login", (req, res) => {
 
 
 //Actualizar nombre y correo 
+app.put("/actualizarUsuario", (req, res) => {
+    const {correo, nuevoNombre, nuevoCorreo} = req.body; 
+    
+    const query = "UPDATE usuarios SET nombre = ?, correo = ?,"
+
+    bd.query(query, [nuevoNombre, nuevoCorreo, correo], (err, result)=> {
+        if(err){
+            console.log(err);
+            return res.status(500).json({mensaje:"Error al actualizar"});
+        }
+        res.json({mensaje: "Perfil actualizado correctamente"});    
+    });
+});
