@@ -8,6 +8,8 @@ const Perfil: React.FC = () => {
     const history = useHistory();
     const [editando, setEditando] = useState(false);
 
+
+    //Este es el sitio de la vista, 
     const [datos, setDatos] = useState({
         nombre: '',
         correo: '',
@@ -16,6 +18,7 @@ const Perfil: React.FC = () => {
         miembro: ''
     });
 
+    //Por medio de esta función logramos agregar nombre, correo y fecha registrada en la base de datos
     useEffect(() => {
         const nombre = localStorage.getItem('nombre');
         const correo = localStorage.getItem('correo');
@@ -27,6 +30,33 @@ const Perfil: React.FC = () => {
 
     const handleChange = (campo: string, valor: string) => {
         setDatos({ ...datos, [campo]: valor });
+    };
+
+    const handleGuardar = async() => {
+        const correoOriginal = localStorage.getItem('correo'); //Llamamos el correo original
+
+        try{
+            const res = await fetch("http://localhost:3000/actualizarUsuario", {
+                method: "PUT",//Actualizar
+                headers: {"Content-Type": "applicatión/json"},
+                body: JSON.stringify({
+                    correo: correoOriginal,
+                    nuevoNombre: datos.nombre, 
+                    nuevoCorreo: datos.correo
+                })
+            });
+            const data = await res.json()
+
+            if(res.ok){
+                localStorage.setItem('nombre', datos.nombre);
+                localStorage.setItem('correo', datos.correo); 
+                alert("Perfil actualizado");
+            } else{
+                alert(data.mensaje);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (
@@ -89,7 +119,14 @@ const Perfil: React.FC = () => {
                         </div>
 
                         <div className="btn-container">
+<<<<<<< Updated upstream
                             <IonButton className='btn' onClick={() => setEditando(!editando)} expand="block">{editando ? 'Guardar' : 'Editar'}</IonButton>
+=======
+                            <IonButton onClick={() => {
+                                if (editando) handleGuardar();
+                                setEditando(!editando); 
+                            }}  expand="block"> {editando ? 'Guardar' : 'Editar'}</IonButton>
+>>>>>>> Stashed changes
                         </div>
                         
                     </div>
