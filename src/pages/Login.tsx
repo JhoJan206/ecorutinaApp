@@ -8,8 +8,12 @@ const Login: React.FC = () => {
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
 
-
     const handleLogin = async () => {
+        if (!correo || !password) {
+            alert("Por favor completa todos los campos");
+            return;
+        }
+
         try {
             const res = await fetch("http://localhost:3000/login", {
                 method: "POST",
@@ -23,8 +27,17 @@ const Login: React.FC = () => {
                 localStorage.setItem('correo', correo);
                 localStorage.setItem('fechaRegistro', data.fechaRegistro);
                 localStorage.setItem('userId', data.id);
+                
+                const evalRes = await fetch(`http://localhost:3000/tieneEvaluacion/${data.id}`);
+                const evalData = await evalRes.json();
+                
                 alert(`Bienvenido, ${data.usuario}`);
-                history.push('/home');
+                
+                if(evalData.tieneEvaluacion){
+                    history.push('/home');
+                } else {
+                    history.push('/evaluacion');
+                }
             }else {
                 alert(data.mensaje);
             }
@@ -48,9 +61,24 @@ const Login: React.FC = () => {
                     <div className="card">
 
                         <h3>Correo electrónico</h3>
-                        <IonInput className="input" placeholder="Correo electrónico" onIonChange={(e) => setCorreo(e.detail.value!)} />
+                        <IonInput 
+                            className="input" 
+                            placeholder="Correo electrónico" 
+                            fill="outline"
+                            value={correo}
+                            onIonChange={(e) => setCorreo(e.detail.value!)}
+                            onInput={(e) => setCorreo(e.currentTarget.value as string)}
+                        />
                         <h3>Contraseña</h3>
-                        <IonInput className="input" type="password" placeholder="Contraseña" onIonChange={(e) => setPassword(e.detail.value!)} />
+                        <IonInput 
+                            className="input" 
+                            type="password" 
+                            placeholder="Contraseña"
+                            fill="outline"
+                            value={password}
+                            onIonChange={(e) => setPassword(e.detail.value!)}
+                            onInput={(e) => setPassword(e.currentTarget.value as string)}
+                        />
                         <p>¿Olvidaste tu contraseña?</p>
 
                         <IonButton expand="block" className="btn" onClick={handleLogin}>Iniciar sesion</IonButton>

@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS categorias (
 );
 
 -- 4. Tabla hábitos (las rutinas que el usuario debe completar)
+-- Nivel: 1=Principiante, 2=Intermedio, 3=Profesional
 CREATE TABLE IF NOT EXISTS habitos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_id INT NOT NULL,
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS habitos (
     descripcion TEXT,
     puntos INT DEFAULT 10,
     frecuencia ENUM('diaria', 'semanal') DEFAULT 'diaria',
+    nivel TINYINT DEFAULT 1,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
@@ -61,6 +63,19 @@ CREATE TABLE IF NOT EXISTS recompensas (
     icono VARCHAR(50)
 );
 
+-- 7. Tabla evaluaciones (respuestas del cuestionario inicial)
+CREATE TABLE IF NOT EXISTS evaluaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    pregunta1 INT,
+    pregunta2 INT,
+    pregunta3 INT,
+    pregunta4 INT,
+    nivel_final INT,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
 -- Insertar datos iniciales
 INSERT INTO categorias (nombre, descripcion, icono) VALUES
 ('Ahorro de agua', 'Hábitos para cuidar el agua', '💧'),
@@ -68,26 +83,71 @@ INSERT INTO categorias (nombre, descripcion, icono) VALUES
 ('Reducción de residuos', 'Menos basura, más reciclaje', '♻️'),
 ('Transporte verde', 'Movilidad sostenible', '🚲');
 
-INSERT INTO habitos (categoria_id, nombre, descripcion, puntos) VALUES
-(1, 'Cerrar el grifo mientras me cepillo', 'Ahorro de agua al cepillarse', 10),
-(1, 'Ducharse en menos de 5 minutos', 'Reducir tiempo de ducha', 15),
-(1, 'Reutilizar agua de lavado de verduras', 'Usar agua de forma inteligente', 10),
-(1, 'No dejar llaves abiertas', 'Evitar desperdicio de agua', 10),
-(1, 'Regar plantas con agua de ahorro', 'Reutilizar agua tratada', 10),
+-- PRINCIPIANTE (nivel 1) - 5 hábitos por categoría
+INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, nivel) VALUES
+-- Agua (principiante)
+(1, 'Cerrar el grifo mientras me cepillo', 'Ahorro de agua al cepillarse', 10, 1),
+(1, 'Ducharse en menos de 5 minutos', 'Reducir tiempo de ducha', 15, 1),
+(1, 'Reutilizar agua de lavage de verduras', 'Usar agua de forma inteligente', 10, 1),
+(1, 'No dejar llaves abiertas', 'Evitar desperdicio de agua', 10, 1),
+(1, 'Regar plantas con agua de ahorro', 'Reutilizar agua tratada', 10, 1),
 
-(2, 'Apagar luces al salir de una habitación', 'Ahorro de energía', 10),
-(2, 'Desconectar appareils en standby', 'Evitar consumo innecesario', 15),
-(2, 'Usar luz natural siempre que sea posible', 'Reducir uso de bombillas', 10),
-(2, 'Apagar el computador cuando no se use', 'Ahorro energético', 10),
+-- Energía (principiante)
+(2, 'Apagar luces al salir de una habitación', 'Ahorro de energía', 10, 1),
+(2, 'Desconectar aparatos en standby', 'Evitar consumo innecesario', 15, 1),
+(2, 'Usar luz natural siempre que sea posible', 'Reducir uso de bombillas', 10, 1),
+(2, 'Apagar el computador cuando no se use', 'Ahorro energético', 10, 1),
+(2, 'Desconectar cargadores cuando no se usen', 'Evitar consumo pasivo', 10, 1),
 
-(3, 'Separar residuos correctamente', 'Reciclaje adecuado', 15),
-(3, 'Usar bolsa reutilizable', 'Evitar plásticos', 10),
-(3, 'Compostar residuos orgánicos', 'Reducir basura', 20),
-(3, 'No usar popotes ni plásticos', 'Reducir contaminación', 10),
+-- Residuos (principiante)
+(3, 'Separar residuos correctamente', 'Reciclaje adecuado', 15, 1),
+(3, 'Usar bolsa reutilizable', 'Evitar plásticos', 10, 1),
+(3, 'No usar popotes ni plásticos', 'Reducir contaminación', 10, 1),
+(3, 'Reciclar papel y cartón', 'Separar materiales reciclables', 10, 1),
+(3, 'Usar contenedores de órganico', 'Compostaje básico', 10, 1),
 
-(4, 'Caminar o bicicleta al trabajo/uni', 'Transporte limpio', 20),
-(4, 'Usar transporte público', 'Reducir emisiones', 15),
-(4, 'Compartir viaje (carpool)', 'Optimizar viajes', 15);
+-- Transporte (principiante)
+(4, 'Caminar o bicicleta al trabajo/uni', 'Transporte limpio', 20, 1),
+(4, 'Usar transporte público', 'Reducir emisiones', 15, 1),
+(4, 'Compartir viaje (carpool)', 'Optimizar viajes', 15, 1),
+(4, 'Evitar viajes cortos en coche', 'Caminar distancias cortas', 10, 1),
+(4, 'Planificar rutas para múltiples tareas', 'Optimizar viajes', 10, 1);
+
+-- INTERMEDIO (nivel 2) - 2 hábitos adicionales por categoría
+INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, nivel) VALUES
+-- Agua (intermedio)
+(1, 'Instalar reductores de flujo en grifos', 'Reducir consumo de agua', 20, 2),
+(1, 'Recolectar agua de lluvia para plantas', 'Reutilizar agua natural', 15, 2),
+
+-- Energía (intermedio)
+(2, 'Usar bombillas LED de bajo consumo', 'Reducir consumo eléctrico', 20, 2),
+(2, 'Programar termostato inteligente', 'Optimizar climatización', 15, 2),
+
+-- Residuos (intermedio)
+(3, 'Compostar residuos de cocina', 'Reducir basura orgánica', 25, 2),
+(3, 'Evitar productos con exceso de包装', 'Reducir residuos desde origen', 15, 2),
+
+-- Transporte (intermedio)
+(4, 'Trabajar desde casa 1 día/semana', 'Reducir desplazamientos', 20, 2),
+(4, 'Mantener el vehículo en buen estado', 'Reducir emisiones', 15, 2);
+
+-- PROFESIONAL (nivel 3) - 2 hábitos adicionales por categoría
+INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, nivel) VALUES
+-- Agua (profesional)
+(1, 'Instalar sistema de reutilización de aguas grises', 'Reciclaje total de agua', 35, 3),
+(1, 'Cultivar huerto urbano con riego por goteo', 'Agricultura sostenible', 30, 3),
+
+-- Energía (profesional)
+(2, 'Instalar paneles solares domésticos', 'Energía renovable', 40, 3),
+(2, 'AuditEnergy energética del hogar', 'Optimización avanzada', 30, 3),
+
+-- Residuos (profesional)
+(3, 'Crear红十字 de compostaje comunitario', 'Gestión integral de residuos', 40, 3),
+(3, 'Implementar economía circular en casa', 'Reutilización creativa', 35, 3),
+
+-- Transporte (profesional)
+(4, 'Adquirir vehículo eléctrico o híbrido', 'Movilidad cero emisiones', 50, 3),
+(4, 'Compensar huella de carbono', 'Neutralizar emisiones', 40, 3);
 
 INSERT INTO recompensas (nombre, descripcion, puntosRequeridos, icono) VALUES
 ('Semana Verde', 'Badge por completar 7 días seguidos', 100, '🌱'),
@@ -97,6 +157,39 @@ INSERT INTO recompensas (nombre, descripcion, puntosRequeridos, icono) VALUES
 ('Viajero Verde', 'Badge por completar hábitos de transporte', 150, '🚲'),
 ('Eco Experto', 'Badge por completar todos los hábitos', 500, '🏆');
 
+-- ============================================
+-- ACTUALIZAR BASE DE DATOS EXISTENTE
+-- Ejecutar solo si ya tienes la base creada
+-- ============================================
+
+-- Agregar columna nivel si no existe
+ALTER TABLE habitos ADD COLUMN nivel TINYINT DEFAULT 1;
+
+-- Actualizar los hábitos existentes con nivel 1
+UPDATE habitos SET nivel = 1 WHERE nivel IS NULL OR nivel = 0;
+
+-- INTERMEDIO (nivel 2) - 2 hábitos adicionales por categoría
+INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, nivel) VALUES
+(1, 'Instalar reductores de flujo en grifos', 'Reducir consumo de agua', 20, 2),
+(1, 'Recolectar agua de lluvia para plantas', 'Reutilizar agua natural', 15, 2),
+(2, 'Usar bombillas LED de bajo consumo', 'Reducir consumo eléctrico', 20, 2),
+(2, 'Programar termostato inteligente', 'Optimizar climatización', 15, 2),
+(3, 'Compostar residuos de cocina', 'Reducir basura orgánica', 25, 2),
+(3, 'Evitar productos con exceso de Packaging', 'Reducir residuos desde origen', 15, 2),
+(4, 'Trabajar desde casa 1 día/semana', 'Reducir desplazamientos', 20, 2),
+(4, 'Mantener el vehículo en buen estado', 'Reducir emisiones', 15, 2);
+
+-- PROFESIONAL (nivel 3) - 2 hábitos adicionales por categoría
+INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, nivel) VALUES
+(1, 'Instalar sistema de reutilización de aguas grises', 'Reciclaje total de agua', 35, 3),
+(1, 'Cultivar huerto urbano con riego por goteo', 'Agricultura sostenible', 30, 3),
+(2, 'Instalar paneles solares domésticos', 'Energía renovable', 40, 3),
+(2, 'AuditEnergy energética del hogar', 'Optimización avanzada', 30, 3),
+(3, 'Crear punto de compostaje comunitario', 'Gestión integral de residuos', 40, 3),
+(3, 'Implementar economía circular en casa', 'Reutilización creativa', 35, 3),
+(4, 'Adquirir vehículo eléctrico o híbrido', 'Movilidad cero emisiones', 50, 3),
+(4, 'Compensar huella de carbono', 'Neutralizar emisiones', 40, 3);
+
 -- Verificar que todo se creó
 SHOW TABLES;
-SELECT 'Base de datos creada correctamente' AS mensaje;
+SELECT 'Base de datos actualizada correctamente' AS mensaje;

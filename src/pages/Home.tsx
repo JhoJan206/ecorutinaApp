@@ -32,6 +32,7 @@ const Home: React.FC = () => {
     const [nivel, setNivel] = useState(1);
     const [categorias, setCategorias] = useState<CategoriaData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [completadosIds, setCompletadosIds] = useState<number[]>([]);
 
     useEffect(() => {
       const nombreGuardado = localStorage.getItem('nombre');
@@ -44,39 +45,31 @@ const Home: React.FC = () => {
       if (!userId) return;
 
       try {
-        const [statsRes, habitosRes, progresoRes] = await Promise.all([
-          fetch(`http://localhost:3000/stats/${userId}`),
-          fetch('http://localhost:3000/habitos'),
-          fetch(`http://localhost:3000/progreso/${userId}`)
-        ]);
-
+        const statsRes = await fetch(`http://localhost:3000/stats/${userId}`);
         const stats = await statsRes.json();
-        const habitos: Habito[] = await habitosRes.json();
-        const progresos: Progreso[] = await progresoRes.json();
+        const nivelUsuario = stats.nivel || 1;
 
         setRacha(stats.racha || 0);
         setEcoPuntos(stats.ecoPuntos || 0);
-        setNivel(stats.nivel || 1);
+        setNivel(nivelUsuario);
 
-        const completadosIds = progresos.filter(p => p.completado).map(p => p.habit_id);
+        const [habitosRes, progresoRes] = await Promise.all([
+          fetch(`http://localhost:3000/habitos/${nivelUsuario}`),
+          fetch(`http://localhost:3000/progreso/${userId}`)
+        ]);
 
-        const categoriasAgrupadas = habitos.reduce((acc: CategoriaData[], habito) => {
-          const catIndex = acc.findIndex(c => c.nombre === habito.categoria);
-          if (catIndex === -1) {
-            acc.push({
-              nombre: habito.categoria,
-              icono: habito.icono,
-              habitos: [habito],
-              completados: completadosIds.includes(habito.id) ? 1 : 0
-            });
-          } else {
-            acc[catIndex].habitos.push(habito);
-            if (completadosIds.includes(habito.id)) {
-              acc[catIndex].completados++;
-            }
-          }
-          return acc;
-        }, []);
+        const categoriasData = await habitosRes.json();
+        const progresos: Progreso[] = await progresoRes.json();
+
+        const completados = progresos.filter(p => p.completado).map(p => p.habit_id);
+        setCompletadosIds(completados);
+
+        const categoriasAgrupadas: CategoriaData[] = categoriasData.map((cat: any) => ({
+          nombre: cat.nombre,
+          icono: cat.icono,
+          habitos: cat.habitos,
+          completados: cat.habitos.filter((h: Habito) => completadosIds.includes(h.id)).length
+        }));
 
         setCategorias(categoriasAgrupadas);
       } catch (error) {
@@ -152,8 +145,8 @@ const Home: React.FC = () => {
                             <small>{porcentaje}% completado</small>
 
                             <div className="habitos-list">
-                              {cat.habitos.map(habito => {
-                                const estaCompletado = cat.habitos.indexOf(habito) < cat.completados;
+                              {cat.habitos.map((habito: Habito) => {
+                                const estaCompletado = completadosIds.includes(habito.id);
                                 return (
                                   <div 
                                     key={habito.id} 

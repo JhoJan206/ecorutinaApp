@@ -7,16 +7,17 @@ import './styles.css';
 // (e) es el evento, setUsuario guarda el valor, e.detail.value es el texto del input.  
 const Registro: React.FC = () => {
     const history = useHistory();
-    //Esto me va a guardar los inputs del usuario para mandarlo a la base de datos. 
     const [usuario, setUsuario] = useState('');
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
 
     const handleRegister = async () => {
-        console.log("Datos:", usuario, correo, password);
+        if (!usuario || !correo || !password) {
+            alert("Por favor completa todos los campos");
+            return;
+        }
 
-
-        try{
+        try {
             //Mandar los inputs al backend para subirlo al mysql mediante el metodo post en formato json
             const res = await fetch("http://localhost:3000/registro", {
                 method: "POST",
@@ -31,7 +32,10 @@ const Registro: React.FC = () => {
             const data = await res.json();
             if(res.ok){
                 alert("Registro exitoso");
-                history.push('/login');
+                localStorage.setItem('userId', data.id);
+                localStorage.setItem('nombre', data.usuario);
+                localStorage.setItem('correo', correo);
+                history.push('/evaluacion');
             }else{
                 alert(data.mensaje);
             }
@@ -56,11 +60,30 @@ const Registro: React.FC = () => {
                     <div className="card">
                         <h3>Nombre de usuario</h3>
                         
-                        <IonInput className="input" placeholder="Nombre de usuario" onIonChange={(e) => setUsuario(e.detail.value!)} />
+                        <IonInput 
+                            className="input" 
+                            placeholder="Nombre de usuario" 
+                            value={usuario}
+                            onIonChange={(e) => setUsuario(e.detail.value!)}
+                            onInput={(e) => setUsuario(e.currentTarget.value as string)}
+                        />
                         <h3>Correo electrónico</h3>
-                        <IonInput className="input" placeholder="Correo electrónico" onIonChange={(e) => setCorreo(e.detail.value!)} />
+                        <IonInput 
+                            className="input" 
+                            placeholder="Correo electrónico" 
+                            value={correo}
+                            onIonChange={(e) => setCorreo(e.detail.value!)}
+                            onInput={(e) => setCorreo(e.currentTarget.value as string)}
+                        />
                         <h3>Contraseña</h3>
-                        <IonInput className="input" type="password" placeholder="Contraseña" onIonChange={(e) => setPassword(e.detail.value!)} />
+                        <IonInput 
+                            className="input" 
+                            type="text" 
+                            placeholder="Contraseña" 
+                            value={password}
+                            onIonChange={(e) => setPassword(e.detail.value!)}
+                            onInput={(e) => setPassword(e.currentTarget.value as string)}
+                        />
 
                         <IonButton expand="block" className="btn" onClick={handleRegister}>Registrarse</IonButton>
 

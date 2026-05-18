@@ -54,7 +54,11 @@ app.post("/registro", async (req, res) => {
                 console.error("Error al insertar:", err);
                 return res.status(500).json({mensaje: "Error al registrar"});
             }
-            res.json({mensaje: "Usuario registrado correctamente"});
+            res.json({
+                mensaje: "Usuario registrado correctamente",
+                id: result.insertId,
+                usuario: usuario
+            });
         });
     });
 });
@@ -153,6 +157,54 @@ app.get("/habitos", (req, res) => {
     });
 });
 
+//OBTENER hábitos según nivel del usuario
+app.get("/habitos/:nivel", (req, res) => {
+    const nivel = parseInt(req.params.nivel);
+    
+    let nivelesIncluir = [1];
+    if(nivel >= 5 && nivel <= 10) {
+        nivelesIncluir = [1, 2];
+    } else if(nivel >= 11) {
+        nivelesIncluir = [1, 2, 3];
+    }
+
+    const query = `
+        SELECT h.id, h.nombre, h.descripcion, h.puntos, c.nombre as categoria, c.icono, h.nivel
+        FROM habitos h
+        JOIN categorias c ON h.categoria_id = c.id
+        WHERE h.nivel IN (?)
+        ORDER BY c.id, h.nivel, h.id
+    `;
+
+    bd.query(query, [nivelesIncluir], (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).json({mensaje: "Error al obtener hábitos"});
+        }
+
+        const categoriasAgrupadas = {};
+        result.forEach(habito => {
+            if(!categoriasAgrupadas[habito.categoria]) {
+                categoriasAgrupadas[habito.categoria] = {
+                    nombre: habito.categoria,
+                    icono: habito.icono,
+                    habitos: []
+                };
+            }
+            categoriasAgrupadas[habito.categoria].habitos.push({
+                id: habito.id,
+                nombre: habito.nombre,
+                descripcion: habito.descripcion,
+                puntos: habito.puntos,
+                categoria: habito.categoria,
+                icono: habito.icono
+            });
+        });
+
+        res.json(Object.values(categoriasAgrupadas));
+    });
+});
+
 //OBTENER progreso del usuario HOY
 app.get("/progreso/:userId", (req, res) => {
     const userId = req.params.userId;
@@ -221,5 +273,75 @@ app.post("/completarHabito", (req, res) => {
                 });
             });
         });
+    });
+});
+
+//GUARDAR evaluación inicial y actualizar nivel del usuario
+app.post("/evaluacion", (req, res) => {
+    const { usuarioId, respuestas, nivel } = req.body;
+
+    if(!usuarioId || !respuestas || !nivel) {
+        return res.status(400).json({mensaje: "Datos incompletos"});
+    }
+
+    if(respuestas.length !== 4) {
+        return res.status(400).json({mensaje: "Se requieren 4 respuestas"});
+    }
+
+    //Verificar si ya existe evaluación
+    const checkEval = "SELECT id FROM evaluaciones WHERE usuario_id = ?";
+    bd.query(checkEval, [usuarioId], (err, result) => {
+        if(err) {
+            console.error("Error al verificar evaluación:", err);
+            return res.status(500).json({mensaje: "Error en el servidor"});
+        }
+
+        if(result.length > 0) {
+            return res.status(400).json({mensaje: "Evaluación ya existente"});
+        }
+
+        //Insertar evaluación
+        const insertEval = `
+            INSERT INTO evaluaciones (usuario_id, pregunta1, pregunta2, pregunta3, pregunta4, nivel_final)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        bd.query(insertEval, [usuarioId, respuestas[0], respuestas[1], respuestas[2], respuestas[3], nivel], (err, result) => {
+            if(err) {
+                console.error("Error al guardar evaluación:", err);
+                return res.status(500).json({mensaje: "Error al guardar evaluación"});
+            }
+
+            //Actualizar nivel del usuario
+            const updateNivel = "UPDATE usuarios SET nivel = ? WHERE id = ?";
+            bd.query(updateNivel, [nivel, usuarioId], (err, result) => {
+                if(err) {
+                    console.error("Error al actualizar nivel:", err);
+                    return res.status(500).json({mensaje: "Error al actualizar nivel"});
+                }
+
+                res.json({mensaje: "Evaluación guardada correctamente", nivel: nivel});
+            });
+        });
+    });
+});
+
+//VERIFICAR si el usuario ya tiene evaluación
+app.get("/tieneEvaluacion/:userId", (req, res) => {
+    const userId = req.params.userId;
+
+    const query = "SELECT id, nivel_final FROM evaluaciones WHERE usuario_id = ?";
+
+    bd.query(query, [userId], (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).json({mensaje: "Error al verificar evaluación"});
+        }
+
+        if(result.length > 0) {
+            res.json({ tieneEvaluacion: true, nivel: result[0].nivel_final });
+        } else {
+            res.json({ tieneEvaluacion: false });
+        }
     });
 });
