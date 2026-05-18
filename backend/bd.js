@@ -1,17 +1,11 @@
-/*
-11/04/2026
 
-Conexión a la base de datos LOCAL del equipo de Juan Moreno 
-
--JuanMoreno 
-*/
 
 import mysql from "mysql2"; 
 
 const conexion = mysql.createConnection({
     host: "127.0.0.1",
     user: "root",
-    password: "13462597Ju",
+    password: "20061102",
     database: "ecoRutina"
 });
 

@@ -69,3 +69,52 @@ main{
     text-align: center;
     font-size: 18px;
 }
+.habitos-list {
+    margin-top: 10px;
+}
+.habito-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: #fff;
+    border-radius: 8px;
+    margin-top: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.habito-item:hover {
+    background: #e8f5e9;
+}
+.habito-item.completado {
+    background: #c8e6c9;
+    opacity: 0.7;
+}
+.checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #6dbf9b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-size: 14px;
+    color: #6dbf9b;
+}
+.habito-item.completado .checkbox {
+    background: #6dbf9b;
+    color: white;
+}
+.habito-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.habito-info span {
+    font-size: 13px;
+    color: #3a5a40;
+}
+.habito-info small {
+    color: #6dbf9b;
+    font-size: 11px;
+}
