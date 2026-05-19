@@ -39,6 +39,8 @@ import Registro from './pages/Registro';
 import EvaluacionInicial from './pages/EvaluacionInicial';
 import Home from './pages/Home';
 import Perfil from './pages/Perfil';
+import Recompensas from './pages/Recompensas';
+import Simulador from './pages/Simulador';
 
 const App: React.FC = () => (
   <IonApp>
@@ -50,6 +52,8 @@ const App: React.FC = () => (
         <Route path="/evaluacion" component={EvaluacionInicial} />
         <Route path="/home" component={Home} />
         <Route path="/perfil" component={Perfil} />
+        <Route path="/recompensas" component={Recompensas} />
+        <Route path="/simulador" component={Simulador} />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>

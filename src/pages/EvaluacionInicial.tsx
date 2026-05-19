@@ -1,7 +1,7 @@
 import { IonPage, IonContent, IonButton } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
-import './Onboarding.css';
+import './styles.css';
 
 const EvaluacionInicial: React.FC = () => {
     const history = useHistory();
@@ -20,7 +20,7 @@ const EvaluacionInicial: React.FC = () => {
             .then(data => {
                 if(data.tieneEvaluacion) {
                     localStorage.setItem('nivel', data.nivel.toString());
-                    history.push('/onboarding1');
+                    history.push('/home');
                 }
             })
             .catch(() => {});
@@ -64,7 +64,7 @@ const EvaluacionInicial: React.FC = () => {
                 { valor: 1, texto: "No me preocupo, consumo normal" },
                 { valor: 2, texto: "Intento ahorrar algo de vez en cuando" },
                 { valor: 3, texto: "Siempre apago luces y ahorro agua" },
-                { valor: 4, texto: "Uso eficiencia energética y agua responsibly" }
+                { valor: 4, texto: "Uso eficiencia energética y agua responsable" }
             ]
         }
     ];

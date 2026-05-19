@@ -1,24 +1,30 @@
-import {IonPage, IonContent, IonInput, IonButton} from '@ionic/react';
+import {IonPage, IonContent, IonInput, IonButton, IonToast} from '@ionic/react';
 import { useHistory } from 'react-router';
-import { useState } from "react"; //Colocado por Juan, es para que se genere un input de lo que se escriba en el registro 
+import { useState } from "react";
 import './styles.css';
 
-//onIonChange es un controlador de eventos, cuando el usuario ingrese sus datos, este se activa cuando se confirma el input
-// (e) es el evento, setUsuario guarda el valor, e.detail.value es el texto del input.  
 const Registro: React.FC = () => {
     const history = useHistory();
     const [usuario, setUsuario] = useState('');
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastColor, setToastColor] = useState<'success' | 'danger'>('success');
+
+    const showToastMessage = (mensaje: string, color: 'success' | 'danger' = 'success') => {
+        setToastMessage(mensaje);
+        setToastColor(color);
+        setShowToast(true);
+    };
 
     const handleRegister = async () => {
         if (!usuario || !correo || !password) {
-            alert("Por favor completa todos los campos");
+            showToastMessage('Por favor completa todos los campos');
             return;
         }
 
         try {
-            //Mandar los inputs al backend para subirlo al mysql mediante el metodo post en formato json
             const res = await fetch("http://localhost:3000/registro", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
@@ -27,75 +33,111 @@ const Registro: React.FC = () => {
                     correo,
                     password
                 })
-            })
-            //Convierte la respuesta (lo de arriba) en objeto JS
+            });
             const data = await res.json();
             if(res.ok){
-                alert("Registro exitoso");
+                showToastMessage('¡Registro exitoso! 🌱', 'success');
                 localStorage.setItem('userId', data.id);
                 localStorage.setItem('nombre', data.usuario);
                 localStorage.setItem('correo', correo);
-                history.push('/evaluacion');
+                
+                setTimeout(() => {
+                    history.push('/evaluacion');
+                }, 1500);
             }else{
-                alert(data.mensaje);
+                showToastMessage(data.mensaje);
             }
         }catch (error){
             console.error("Error", error); 
+            showToastMessage('Error de conexión');
         }
     };  
   
     return (
-    <IonPage>
-        <IonContent>
+        <IonPage>
+            <IonContent>
+                <IonToast
+                    isOpen={showToast}
+                    message={toastMessage}
+                    duration={2500}
+                    color={toastColor}
+                    position="top"
+                    onDidDismiss={() => setShowToast(false)}
+                />
+
                 <div className='header-logs'>
                     <IonButton className='btn-back' onClick={() => history.push('/')} expand="block" shape="round">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" />
+                        </svg>
                     </IonButton>
-                    <h2>Regístrate</h2>
-                    <p>Crea tu cuenta EcoRutina</p>
-                    
+                    <div className="header-logo">
+                        <img src="/Logo.png" alt="EcoRutina" className="logo-img" />
+                    </div>
+                    <h2>Únete a EcoRutina</h2>
+                    <p>Crea tu cuenta y comienza a cuidar el planeta</p>
                 </div>
                 
                 <div className="form-container">   
                     <div className="card">
-                        <h3>Nombre de usuario</h3>
+                        <div className="input-group">
+                            <label>Nombre de usuario</label>
+                            <IonInput 
+                                className="input" 
+                                placeholder="Tu nombre"
+                                fill="outline"
+                                value={usuario}
+                                onIonChange={(e) => setUsuario(e.detail.value!)}
+                                onInput={(e) => setUsuario(e.currentTarget.value as string)}
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label>Correo electrónico</label>
+                            <IonInput 
+                                className="input" 
+                                placeholder="tu@email.com"
+                                fill="outline"
+                                type="email"
+                                value={correo}
+                                onIonChange={(e) => setCorreo(e.detail.value!)}
+                                onInput={(e) => setCorreo(e.currentTarget.value as string)}
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label>Contraseña</label>
+                            <IonInput 
+                                className="input" 
+                                type="password" 
+                                placeholder="••••••••"
+                                fill="outline"
+                                value={password}
+                                onIonChange={(e) => setPassword(e.detail.value!)}
+                                onInput={(e) => setPassword(e.currentTarget.value as string)}
+                            />
+                        </div>
+
+                        <IonButton expand="block" className="btn-primary" onClick={handleRegister}>
+                            Crear cuenta
+                        </IonButton>
+
+                        <div className="divider">
+                            <span>o continúa con</span>
+                        </div>
                         
-                        <IonInput 
-                            className="input" 
-                            placeholder="Nombre de usuario" 
-                            value={usuario}
-                            onIonChange={(e) => setUsuario(e.detail.value!)}
-                            onInput={(e) => setUsuario(e.currentTarget.value as string)}
-                        />
-                        <h3>Correo electrónico</h3>
-                        <IonInput 
-                            className="input" 
-                            placeholder="Correo electrónico" 
-                            value={correo}
-                            onIonChange={(e) => setCorreo(e.detail.value!)}
-                            onInput={(e) => setCorreo(e.currentTarget.value as string)}
-                        />
-                        <h3>Contraseña</h3>
-                        <IonInput 
-                            className="input" 
-                            type="text" 
-                            placeholder="Contraseña" 
-                            value={password}
-                            onIonChange={(e) => setPassword(e.detail.value!)}
-                            onInput={(e) => setPassword(e.currentTarget.value as string)}
-                        />
-
-                        <IonButton expand="block" className="btn" onClick={handleRegister}>Registrarse</IonButton>
-
-                        <small>--- o continuar con ---</small>
-                        <IonButton expand="block" className="btn">Google</IonButton>
-                        <p className="link" onClick={() => history.push('/login')}>¿Ya tienes cuenta? <strong>Inicia sesión</strong></p>
+                        <IonButton expand="block" className="btn-secondary">
+                            <span className="google-icon">G</span> Google
+                        </IonButton>
+                        
+                        <p className="link">
+                            ¿Ya tienes cuenta? 
+                            <strong onClick={() => history.push('/login')}> Inicia sesión</strong>
+                        </p>
                     </div>
                 </div>
 
-        </IonContent>
-    </IonPage>
-  );
+            </IonContent>
+        </IonPage>
+    );
 };
 
 export default Registro;

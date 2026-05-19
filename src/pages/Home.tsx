@@ -1,4 +1,4 @@
-import { IonPage, IonContent } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonToast, IonSpinner } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
 import './Home.css';
@@ -33,6 +33,24 @@ const Home: React.FC = () => {
     const [categorias, setCategorias] = useState<CategoriaData[]>([]);
     const [loading, setLoading] = useState(true);
     const [completadosIds, setCompletadosIds] = useState<number[]>([]);
+    
+    // Toast state
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastColor, setToastColor] = useState<'success' | 'danger'>('success');
+
+    const getSaludo = () => {
+        const hora = new Date().getHours();
+        if (hora < 12) return 'Buenos días';
+        if (hora < 18) return 'Buenas tardes';
+        return 'Buenas noches';
+    };
+
+    const getNivelTexto = (nivel: number) => {
+        if (nivel >= 11) return 'Experto';
+        if (nivel >= 5) return 'Intermedio';
+        return 'Principiante';
+    };
 
     useEffect(() => {
       const nombreGuardado = localStorage.getItem('nombre');
@@ -40,12 +58,25 @@ const Home: React.FC = () => {
       cargarDatos();
     }, []);
 
+    const showToastMessage = (mensaje: string, color: 'success' | 'danger' = 'success') => {
+        setToastMessage(mensaje);
+        setToastColor(color);
+        setShowToast(true);
+    };
+
     const cargarDatos = async () => {
       const userId = localStorage.getItem('userId');
-      if (!userId) return;
+      if (!userId) {
+          setLoading(false);
+          return;
+      }
 
       try {
-        const statsRes = await fetch(`http://localhost:3000/stats/${userId}`);
+        const [statsRes, progresoRes] = await Promise.all([
+          fetch(`http://localhost:3000/stats/${userId}`),
+          fetch(`http://localhost:3000/progreso/${userId}`)
+        ]);
+
         const stats = await statsRes.json();
         const nivelUsuario = stats.nivel || 1;
 
@@ -53,12 +84,9 @@ const Home: React.FC = () => {
         setEcoPuntos(stats.ecoPuntos || 0);
         setNivel(nivelUsuario);
 
-        const [habitosRes, progresoRes] = await Promise.all([
-          fetch(`http://localhost:3000/habitos/${nivelUsuario}`),
-          fetch(`http://localhost:3000/progreso/${userId}`)
-        ]);
-
+        const habitosRes = await fetch(`http://localhost:3000/habitos/${nivelUsuario}`);
         const categoriasData = await habitosRes.json();
+        
         const progresos: Progreso[] = await progresoRes.json();
 
         const completados = progresos.filter(p => p.completado).map(p => p.habit_id);
@@ -68,18 +96,19 @@ const Home: React.FC = () => {
           nombre: cat.nombre,
           icono: cat.icono,
           habitos: cat.habitos,
-          completados: cat.habitos.filter((h: Habito) => completadosIds.includes(h.id)).length
+          completados: cat.habitos.filter((h: Habito) => completados.includes(h.id)).length
         }));
 
         setCategorias(categoriasAgrupadas);
       } catch (error) {
         console.error('Error al cargar datos:', error);
+        showToastMessage('Error al cargar datos', 'danger');
       } finally {
         setLoading(false);
       }
     };
 
-    const completarHabito = async (habitoId: number) => {
+    const completarHabito = async (habitoId: number, puntos: number) => {
       const userId = localStorage.getItem('userId');
       if (!userId) return;
 
@@ -91,45 +120,70 @@ const Home: React.FC = () => {
         });
         const data = await res.json();
         if (res.ok) {
-          alert(`+${data.puntosGanados} EcoPuntos!`);
+          showToastMessage(`+${data.puntosGanados} EcoPuntos! 🌱`, 'success');
           cargarDatos();
         } else {
-          alert(data.mensaje);
+          showToastMessage(data.mensaje, 'danger');
         }
       } catch (error) {
         console.error('Error:', error);
+        showToastMessage('Error al completar hábito', 'danger');
       }
     };
 
     return (
         <IonPage>
             <IonContent>
+                <IonToast
+                    isOpen={showToast}
+                    message={toastMessage}
+                    duration={2500}
+                    color={toastColor}
+                    position="top"
+                    onDidDismiss={() => setShowToast(false)}
+                    buttons={[{ text: 'OK', role: 'cancel' }]}
+                />
+
                 <header>
                     <div className='header-user'>
-                        <div><p>Buenos días,</p>
-                        <h2><strong>{nombre}</strong></h2></div>
-                        <div onClick={() => history.push('/Perfil')}><div className="avatar">{nombre.charAt(0).toUpperCase()}</div></div>
+                        <div>
+                            <p className="saludo">{getSaludo()},</p>
+                            <h2><strong>{nombre || 'Usuario'}</strong></h2>
+                        </div>
+                        <div className="avatar" onClick={() => history.push('/perfil')}>
+                            {(nombre || 'U').charAt(0).toUpperCase()}
+                        </div>
                     </div>
                     <div className="stats">
                         <div className="stat-card">
+                            <span className="stat-icon">🔥</span>
                             <h3>{racha}</h3>
                             <p>Racha</p>
                         </div>
                         <div className="stat-card">
+                            <span className="stat-icon">🌱</span>
                             <h3>{ecoPuntos}</h3>
                             <p>EcoPuntos</p>
                         </div>
                         <div className="stat-card">
-                            <h3>Nivel {nivel}</h3>
-                            <p>Nivel</p>
+                            <span className="stat-icon">⭐</span>
+                            <h3>{getNivelTexto(nivel)}</h3>
+                            <p>Nivel {nivel}</p>
                         </div>
                     </div>
                 </header>
                 <main>
-                    <h3>Rutinas de hoy</h3>
+                    <h3>🌿 Rutinas de hoy</h3>
 
                     {loading ? (
-                      <p>Cargando...</p>
+                      <div className="loading-container">
+                        <IonSpinner name="lines" color="success" />
+                        <p>Cargando tus hábitos...</p>
+                      </div>
+                    ) : categorias.length === 0 ? (
+                      <div className="empty-state">
+                        <p>No hay hábitos disponibles</p>
+                      </div>
                     ) : (
                       categorias.map((cat, idx) => {
                         const porcentaje = cat.habitos.length > 0 
@@ -137,8 +191,10 @@ const Home: React.FC = () => {
                           : 0;
                         return (
                           <div className="card-progress" key={idx}>
-                            <h4>{cat.icono} {cat.nombre}</h4>
-                            <p>{cat.completados} de {cat.habitos.length} hábitos completados</p>
+                            <div className="card-header">
+                                <h4>{cat.icono} {cat.nombre}</h4>
+                                <span className="progress-text">{cat.completados}/{cat.habitos.length}</span>
+                            </div>
                             <div className="progress">
                                 <div className="bar" style={{ width: `${porcentaje}%` }}></div>
                             </div>
@@ -151,7 +207,7 @@ const Home: React.FC = () => {
                                   <div 
                                     key={habito.id} 
                                     className={`habito-item ${estaCompletado ? 'completado' : ''}`}
-                                    onClick={() => !estaCompletado && completarHabito(habito.id)}
+                                    onClick={() => !estaCompletado && completarHabito(habito.id, habito.puntos)}
                                   >
                                     <span className="checkbox">{estaCompletado ? '✓' : '○'}</span>
                                     <div className="habito-info">
@@ -166,16 +222,26 @@ const Home: React.FC = () => {
                         );
                       })
                     )}
-
-                    <h3>Acceso rápido</h3>
-
-                    <div className="grid">
-                        <div className="mini-card">📒<p>Mis Rutinas</p></div>
-                        <div className="mini-card">🏆<p>Recompensas</p></div>
-                        <div className="mini-card">🌎<p>Simulador</p></div>
-                        <div className="mini-card" onClick={() => history.push('/Perfil')}>👤<p>Perfil</p></div>
-                    </div>
                 </main>
+
+                <div className="bottom-nav">
+                    <div className="nav-item active" onClick={() => {}}>
+                        <span className="nav-icon">📒</span>
+                        <span className="nav-label">Rutinas</span>
+                    </div>
+                    <div className="nav-item" onClick={() => history.push('/recompensas')}>
+                        <span className="nav-icon">🏆</span>
+                        <span className="nav-label">Premios</span>
+                    </div>
+                    <div className="nav-item" onClick={() => history.push('/simulador')}>
+                        <span className="nav-icon">🌎</span>
+                        <span className="nav-label">Simulador</span>
+                    </div>
+                    <div className="nav-item" onClick={() => history.push('/perfil')}>
+                        <span className="nav-icon">👤</span>
+                        <span className="nav-label">Perfil</span>
+                    </div>
+                </div>
             </IonContent>
         </IonPage>
     );

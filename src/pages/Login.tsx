@@ -1,16 +1,25 @@
-import {IonPage, IonContent, IonInput, IonButton} from '@ionic/react';
+import {IonPage, IonContent, IonInput, IonButton, IonToast} from '@ionic/react';
 import { useHistory } from 'react-router';
-import {useState} from 'react'; //Guardar y actualizar datos de un componente 
+import { useState } from 'react'; 
 import './styles.css';
 
 const Login: React.FC = () => {
     const history = useHistory();
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+
+    const showToastMessage = (mensaje: string, color: 'success' | 'danger' = 'danger') => {
+        setToastMessage(mensaje);
+        setToastColor(color);
+        setShowToast(true);
+    };
 
     const handleLogin = async () => {
         if (!correo || !password) {
-            alert("Por favor completa todos los campos");
+            showToastMessage('Por favor completa todos los campos');
             return;
         }
 
@@ -31,62 +40,93 @@ const Login: React.FC = () => {
                 const evalRes = await fetch(`http://localhost:3000/tieneEvaluacion/${data.id}`);
                 const evalData = await evalRes.json();
                 
-                alert(`Bienvenido, ${data.usuario}`);
+                showToastMessage(`Bienvenido, ${data.usuario} 🌱`, 'success');
                 
-                if(evalData.tieneEvaluacion){
-                    history.push('/home');
-                } else {
-                    history.push('/evaluacion');
-                }
+                setTimeout(() => {
+                    if(evalData.tieneEvaluacion){
+                        history.push('/home');
+                    } else {
+                        history.push('/evaluacion');
+                    }
+                }, 1500);
             }else {
-                alert(data.mensaje);
+                showToastMessage(data.mensaje);
             }
         }catch (error) {
             console.error("Error", error); 
+            showToastMessage('Error de conexión');
         }
     }
     
     return (
         <IonPage>
             <IonContent>
+                <IonToast
+                    isOpen={showToast}
+                    message={toastMessage}
+                    duration={2500}
+                    color={toastColor}
+                    position="top"
+                    onDidDismiss={() => setShowToast(false)}
+                />
+
                 <div className='header-logs'>
                     <IonButton className='btn-back' onClick={() => history.push('/')} expand="block" shape="round">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" />
+                        </svg>
                     </IonButton>
-                    <h1>Inicio de sesión</h1>  
-                    <p>Accede a tus rutinas ecológicas</p>  
+                    <div className="header-logo">
+                        <img src="/Logo.png" alt="EcoRutina" className="logo-img" />
+                    </div>
+                    <h1>Bienvenido de vuelta</h1>  
+                    <p>Inicia sesión para continuar tu camino ecológico</p>  
                 </div>
                         
                 <div className="form-container">
                     <div className="card">
+                        <div className="input-group">
+                            <label>Correo electrónico</label>
+                            <IonInput 
+                                className="input" 
+                                placeholder="tu@email.com" 
+                                fill="outline"
+                                type="email"
+                                value={correo}
+                                onIonChange={(e) => setCorreo(e.detail.value!)}
+                                onInput={(e) => setCorreo(e.currentTarget.value as string)}
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label>Contraseña</label>
+                            <IonInput 
+                                className="input" 
+                                type="password" 
+                                placeholder="••••••••"
+                                fill="outline"
+                                value={password}
+                                onIonChange={(e) => setPassword(e.detail.value!)}
+                                onInput={(e) => setPassword(e.currentTarget.value as string)}
+                            />
+                        </div>
+                        <p className="forgot-pass">¿Olvidaste tu contraseña?</p>
 
-                        <h3>Correo electrónico</h3>
-                        <IonInput 
-                            className="input" 
-                            placeholder="Correo electrónico" 
-                            fill="outline"
-                            value={correo}
-                            onIonChange={(e) => setCorreo(e.detail.value!)}
-                            onInput={(e) => setCorreo(e.currentTarget.value as string)}
-                        />
-                        <h3>Contraseña</h3>
-                        <IonInput 
-                            className="input" 
-                            type="password" 
-                            placeholder="Contraseña"
-                            fill="outline"
-                            value={password}
-                            onIonChange={(e) => setPassword(e.detail.value!)}
-                            onInput={(e) => setPassword(e.currentTarget.value as string)}
-                        />
-                        <p>¿Olvidaste tu contraseña?</p>
+                        <IonButton expand="block" className="btn-primary" onClick={handleLogin}>
+                            Iniciar sesión
+                        </IonButton>
 
-                        <IonButton expand="block" className="btn" onClick={handleLogin}>Iniciar sesion</IonButton>
-
-                        <small>--- o continuar con ---</small>
-                        <IonButton expand="block" className="btn">Google</IonButton>
-                        <p className="link" onClick={() => history.push('/registro')}>¿No tienes cuenta? <strong>Regístrate</strong></p>
-
+                        <div className="divider">
+                            <span>o continúa con</span>
+                        </div>
+                        
+                        <IonButton expand="block" className="btn-secondary">
+                            <span className="google-icon">G</span> Google
+                        </IonButton>
+                        
+                        <p className="link">
+                            ¿No tienes cuenta? 
+                            <strong onClick={() => history.push('/registro')}> Regístrate</strong>
+                        </p>
                     </div>
                 </div>
         

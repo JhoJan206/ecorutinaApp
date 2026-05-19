@@ -1,0 +1,180 @@
+ion-content.recompensas-content {
+    --background: none;
+    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%);
+}
+.recompensas-header {
+    padding: 15px;
+    padding-top: 40px;
+    color: white;
+    position: relative;
+}
+.btn-back {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    --background: rgba(255, 255, 255, 0.2);
+    --color: #fff;            
+    --border-radius: 50%;    
+    --padding-start: 10px;
+    --padding-end: 10px;
+}
+.header-content {
+    text-align: center;
+    padding-top: 30px;
+}
+.header-content h1 {
+    font-size: 28px;
+    margin: 0 0 15px;
+}
+.puntos-total {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+.puntos-total .icon {
+    font-size: 24px;
+}
+.puntos-total strong {
+    font-size: 32px;
+}
+.progreso-resumen {
+    font-size: 14px;
+    opacity: 0.85;
+    margin: 0;
+}
+.recompensas-main {
+    background-color: #F0FBF4;
+    padding: 20px 15px 40px;
+    border-radius: 30px 30px 0 0;
+    min-height: calc(100vh - 250px);
+}
+.recompensa-card {
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: relative;
+    transition: transform 0.2s ease;
+}
+.recompensa-card:hover {
+    transform: translateY(-2px);
+}
+.recompensa-card.locked {
+    opacity: 0.75;
+}
+.recompensa-card.desbloqueada {
+    border: 2px solid #6dbf9b;
+}
+.recompensa-icon {
+    width: 60px;
+    height: 60px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    position: relative;
+}
+.recompensa-card.desbloqueada .recompensa-icon {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+}
+.recompensa-icon .icono {
+    position: absolute;
+    font-size: 24px;
+    bottom: -2px;
+    right: -2px;
+}
+.recompensa-info {
+    flex: 1;
+}
+.recompensa-info h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+    color: #1B4332;
+}
+.recompensa-info p {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: #666;
+}
+.recompensa-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6dbf9b, #40916C);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+.recompensa-card.locked .progress-fill {
+    background: #ccc;
+}
+.progress-text {
+    font-size: 15px;
+    color: #f0f0f0;
+    white-space: nowrap;
+}
+.recompensa-card.desbloqueada .progress-text {
+    color: #40916C;
+    font-weight: 600;
+}
+.badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #6dbf9b;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+.logros-section {
+    margin-top: 25px;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.logros-section h3 {
+    margin: 0 0 15px;
+    font-size: 16px;
+    color: #1B4332;
+}
+.logros-section ul {
+    margin: 0;
+    padding-left: 20px;
+}
+.logros-section li {
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}

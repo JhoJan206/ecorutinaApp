@@ -1,93 +1,138 @@
 ion-content {
     --background: none;
-    background: url('/fondo.jpg') no-repeat center center / cover;
+    background: linear-gradient(180deg, #1B4332 0%, #2D6A4F 40%, #40916C 100%);
 }
 .header-user {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 10px;
+    padding: 20px 15px 10px;
+}
+.saludo {
+    font-size: 14px;
+    opacity: 0.8;
+    margin: 0;
 }
 .avatar {
-    background: #6dbf9b;
-    width: 40px;
-    height: 40px;
+    background: linear-gradient(135deg, #6dbf9b, #40916C);
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 header {
-    padding: 15px;
+    padding: 10px 15px;
 }
 main{
     background-color: #F0FBF4;
     color: #3a5a40;
-    padding: 5px;
+    padding: 20px 15px 40px;
+    border-radius: 30px 30px 0 0;
+    min-height: calc(100vh - 180px);
+}
+main h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 .stats {
     display: flex;
     justify-content: space-between;
-    margin-top: -20px;
+    gap: 10px;
+    margin-top: 5px;
 }
 .stat-card {
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(5px);
-    padding: 10px;
-    border-radius: 15px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(10px);
+    padding: 12px 8px;
+    border-radius: 16px;
     width: 30%;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stat-card h3 {
+    font-size: 20px;
+    margin: 5px 0;
+    color: #1B4332;
+}
+.stat-card p {
+    font-size: 11px;
+    color: #666;
+    margin: 0;
+}
+.stat-icon {
+    font-size: 20px;
 }
 .card-progress {
-    background: #f3f3f3;
+    background: white;
     padding: 15px;
-    border-radius: 15px;
-    margin-top: 10px;
+    border-radius: 16px;
+    margin-top: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.card-header h4 {
+    margin: 0;
+    font-size: 15px;
+}
+.progress-text {
+    background: #1B4332;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
 }
 .progress {
     height: 8px;
-    background: #ccc;
+    background: #e0e0e0;
     border-radius: 10px;
     margin: 8px 0;
+    overflow: hidden;
 }
 .bar {
     height: 100%;
-    background: #6dbf9b;
+    background: linear-gradient(90deg, #6dbf9b, #40916C);
     border-radius: 10px;
+    transition: width 0.3s ease;
 }
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 10px;
-}
-.mini-card {
-    background: #f3f3f3;
-    border-radius: 15px;
-    padding: 20px;
-    text-align: center;
-    font-size: 18px;
+.card-progress small {
+    font-size: 11px;
+    color: #666;
 }
 .habitos-list {
-    margin-top: 10px;
+    margin-top: 12px;
 }
 .habito-item {
     display: flex;
     align-items: center;
-    padding: 8px;
-    background: #fff;
-    border-radius: 8px;
-    margin-top: 5px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-top: 8px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
 }
 .habito-item:hover {
     background: #e8f5e9;
+    transform: translateX(3px);
 }
 .habito-item.completado {
-    background: #c8e6c9;
-    opacity: 0.7;
+    background: #d4edda;
+    opacity: 0.8;
+}
+.habito-item.completado .habito-info span {
+    text-decoration: line-through;
+    color: #666;
 }
 .checkbox {
     width: 24px;
@@ -97,13 +142,15 @@ main{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 10px;
-    font-size: 14px;
+    margin-right: 12px;
+    font-size: 12px;
     color: #6dbf9b;
+    flex-shrink: 0;
 }
 .habito-item.completado .checkbox {
     background: #6dbf9b;
     color: white;
+    border-color: #6dbf9b;
 }
 .habito-info {
     display: flex;
@@ -112,9 +159,116 @@ main{
 }
 .habito-info span {
     font-size: 13px;
-    color: #3a5a40;
+    color: #1B4332;
+    font-weight: 500;
 }
 .habito-info small {
-    color: #6dbf9b;
+    color: #40916C;
     font-size: 11px;
+    font-weight: 600;
+}
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+}
+.mini-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.mini-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.mini-card .icon {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 8px;
+}
+.mini-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #1B4332;
+    font-weight: 500;
+}
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #666;
+}
+.loading-container p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 5px 12px;
+    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    border-radius: 20px 20px 0 0;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    flex: 1;
+}
+
+.nav-item:active {
+    background: #f0f0f0;
+}
+
+.nav-icon {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.nav-label {
+    font-size: 10px;
+    color: #666;
+    font-weight: 500;
+}
+
+.nav-item.active .nav-icon {
+    transform: scale(1.1);
+}
+
+.nav-item.active .nav-label {
+    color: #1B4332;
+    font-weight: 600;
+}
+
+/* Ajuste del main para la barra fija */
+main {
+    padding-bottom: 70px;
 }

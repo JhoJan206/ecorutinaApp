@@ -32,7 +32,18 @@ app.post("/registro", async (req, res) => {
     const {correo, password, usuario} = req.body;
 
     if(!correo || !password || !usuario){
-        return res.status(400).json({mensaje: "Datos incompletos"});
+        return res.status(400).json({mensaje: "Todos los campos son obligatorios"});
+    }
+
+    // Validación de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(correo)) {
+        return res.status(400).json({mensaje: "El formato del email es inválido"});
+    }
+
+    // Validación de contraseña mínima
+    if(password.length < 6) {
+        return res.status(400).json({mensaje: "La contraseña debe tener al menos 6 caracteres"});
     }
 
     //Verificar si el usuario ya existe
@@ -255,12 +266,13 @@ app.post("/completarHabito", (req, res) => {
                 return res.status(500).json({mensaje: "Error al completar hábito"});
             }
 
-            //Obtener puntos del hábito y sumarlos al usuario
-            const getPuntos = "SELECT puntos FROM habitos WHERE id = ?";
-            bd.query(getPuntos, [habitId], (err, habito) => {
+            //Obtener puntos y co2_kg del hábito
+            const getHabito = "SELECT puntos, co2_kg FROM habitos WHERE id = ?";
+            bd.query(getHabito, [habitId], (err, habito) => {
                 if(err || habito.length === 0) return;
 
                 const puntos = habito[0].puntos;
+                const co2Kg = parseFloat(habito[0].co2_kg) || 0.1;
 
                 //Actualizar ecoPuntos del usuario
                 const updatePuntos = "UPDATE usuarios SET ecoPuntos = ecoPuntos + ? WHERE id = ?";
@@ -269,7 +281,31 @@ app.post("/completarHabito", (req, res) => {
                         console.error(err);
                         return res.status(500).json({mensaje: "Error al sumar puntos"});
                     }
-                    res.json({mensaje: "Hábito completado", puntosGanados: puntos});
+
+                    //Actualizar o insertar en historial_co2
+                    const checkCo2 = "SELECT id, co2_ahorrado, habitos_completados FROM historial_co2 WHERE usuario_id = ? AND fecha = ?";
+                    bd.query(checkCo2, [usuarioId, hoy], (err, co2Result) => {
+                        if(err) {
+                            console.error(err);
+                        } else if(co2Result.length > 0) {
+                            //Ya existe registro hoy, actualizar
+                            const updateCo2 = "UPDATE historial_co2 SET co2_ahorrado = co2_ahorrado + ?, habitos_completados = habitos_completados + 1 WHERE usuario_id = ? AND fecha = ?";
+                            bd.query(updateCo2, [co2Kg, usuarioId, hoy], (err) => {
+                                if(err) console.error(err);
+                            });
+                        } else {
+                            //Insertar nuevo registro
+                            const insertCo2 = "INSERT INTO historial_co2 (usuario_id, fecha, co2_ahorrado, habitos_completados) VALUES (?, ?, ?, 1)";
+                            bd.query(insertCo2, [usuarioId, hoy, co2Kg], (err) => {
+                                if(err) console.error(err);
+                            });
+                        }
+                    });
+
+                    //Actualizar racha
+                    actualizarRacha(usuarioId);
+
+                    res.json({mensaje: "Hábito completado", puntosGanados: puntos, co2Ahorrado: co2Kg});
                 });
             });
         });
@@ -343,5 +379,157 @@ app.get("/tieneEvaluacion/:userId", (req, res) => {
         } else {
             res.json({ tieneEvaluacion: false });
         }
+    });
+});
+
+//OBTENER recompensas
+app.get("/recompensas", (req, res) => {
+    const query = "SELECT id, nombre, descripcion, puntosRequeridos, icono FROM recompensas ORDER BY puntosRequeridos";
+    
+    bd.query(query, (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).json({mensaje: "Error al obtener recompensas"});
+        }
+        res.json(result);
+    });
+});
+
+//ACTUALIZAR racha del usuario
+const actualizarRacha = (usuarioId) => {
+    const hoy = new Date().toISOString().split('T')[0];
+    const ayer = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    
+    //Verificar si completó hábitos ayer para mantener la racha
+    const queryCheck = `
+        SELECT COUNT(*) as total
+        FROM progreso
+        WHERE usuario_id = ? AND fecha = ? AND completado = TRUE
+    `;
+
+    bd.query(queryCheck, [usuarioId, ayer], (err, result) => {
+        if(err) return;
+
+        const completadoAyer = result[0].total > 0;
+
+        //Obtener racha actual
+        const queryRacha = "SELECT racha FROM usuarios WHERE id = ?";
+        bd.query(queryRacha, [usuarioId], (err, usuario) => {
+            if(err || usuario.length === 0) return;
+
+            let nuevaRacha = usuario[0].racha || 0;
+
+            if(completadoAyer) {
+                nuevaRacha += 1;
+            } else {
+                nuevaRacha = 0;
+            }
+
+            //Actualizar racha
+            const updateRacha = "UPDATE usuarios SET racha = ? WHERE id = ?";
+            bd.query(updateRacha, [nuevaRacha, usuarioId], (err) => {});
+        });
+    });
+};
+
+//OBTENER estadísticas de CO2 del usuario
+app.get("/co2/:userId", (req, res) => {
+    const userId = req.params.userId;
+
+    //CO2 total y por categoría
+    const queryTotal = `
+        SELECT
+            COALESCE(SUM(hc.co2_ahorrado), 0) as co2_total,
+            COALESCE(SUM(hc.habitos_completados), 0) as habitos_totales
+        FROM historial_co2 hc
+        WHERE hc.usuario_id = ?
+    `;
+
+    //CO2 por categoría (a través de los hábitos completados)
+    const queryPorCategoria = `
+        SELECT
+            c.nombre as categoria,
+            c.icono,
+            COUNT(p.id) as completados,
+            SUM(h.co2_kg) as co2_ahorrado
+        FROM progreso p
+        JOIN habitos h ON p.habit_id = h.id
+        JOIN categorias c ON h.categoria_id = c.id
+        WHERE p.usuario_id = ? AND p.completado = TRUE
+        GROUP BY c.id, c.nombre, c.icono
+    `;
+
+    //Historial últimos 7 días
+    const queryHistorial7 = `
+        SELECT fecha, co2_ahorrado, habitos_completados
+        FROM historial_co2
+        WHERE usuario_id = ?
+        ORDER BY fecha DESC
+        LIMIT 7
+    `;
+
+    bd.query(queryTotal, [userId], (err, totalResult) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).json({mensaje: "Error al obtener CO2"});
+        }
+
+        bd.query(queryPorCategoria, [userId], (err, catResult) => {
+            if(err) {
+                console.error(err);
+                return res.status(500).json({mensaje: "Error al obtener CO2 por categoría"});
+            }
+
+            bd.query(queryHistorial7, [userId], (err, histResult) => {
+                if(err) {
+                    console.error(err);
+                    return res.status(500).json({mensaje: "Error al obtener historial"});
+                }
+
+                res.json({
+                    co2_total: parseFloat(totalResult[0].co2_total) || 0,
+                    habitos_totales: totalResult[0].habitos_totales || 0,
+                    por_categoria: catResult,
+                    historial: histResult.reverse()
+                });
+            });
+        });
+    });
+});
+
+//OBTENER comparativas de CO2 (equivalencias)
+app.get("/comparativas/:userId", (req, res) => {
+    const userId = req.params.userId;
+
+    const query = "SELECT COALESCE(SUM(co2_ahorrado), 0) as co2_total FROM historial_co2 WHERE usuario_id = ?";
+
+    bd.query(query, [userId], (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).json({mensaje: "Error al obtener comparativas"});
+        }
+
+        const co2 = parseFloat(result[0].co2_total) || 0;
+
+        //Equivalencias (basadas en estudios de huella de carbono)
+        const equivalencias = {
+            //1 árbol adulto absorbe ~21 kg CO2 al año
+           _arboles: (co2 / 21).toFixed(1),
+            //1 km en coche emite ~0.2 kg CO2
+            kilometrosCoche: (co2 / 0.2).toFixed(0),
+            //1 bolsa plástica pesa ~0.005 kg CO2 (producción)
+            bolsasPlastico: Math.floor(co2 / 0.005),
+            //1 hora deTV consume ~0.1 kg CO2
+            horasTV: (co2 / 0.1).toFixed(0),
+            //1 kg de carne de res produce ~27 kg CO2
+            kilosCarne: (co2 / 27).toFixed(1),
+            //Promedio diario ~10 kg CO2 por persona
+            diasSinHuella: (co2 / 10).toFixed(0)
+        };
+
+        res.json({
+            co2_total: co2,
+            equivalencias: equivalencias
+        });
     });
 });
