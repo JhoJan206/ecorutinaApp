@@ -1,6 +1,6 @@
-import { IonPage, IonContent, IonButton, IonInput, IonToast, IonIcon } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonInput, IonToast, IonIcon, useIonViewWillEnter } from '@ionic/react';
 import { useHistory } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { createOutline, checkmarkOutline, chevronBackOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
 import './Perfil.css';
@@ -23,7 +23,11 @@ const Perfil: React.FC = () => {
         racha: 0
     });
 
-    useEffect(() => {
+    const nombreRef = useRef(localStorage.getItem('nombre') || '');
+    const correoRef = useRef(localStorage.getItem('correo') || '');
+    const motivacionRef = useRef(localStorage.getItem('motivacion') || 'Cuidar el planeta');
+
+    useIonViewWillEnter(() => {
         const userId = localStorage.getItem('userId');
         if (userId) {
             fetch(`http://localhost:3000/stats/${userId}`)
@@ -33,8 +37,10 @@ const Perfil: React.FC = () => {
                         ...prev,
                         nivel: stats.nivel || 1,
                         ecoPuntos: stats.ecoPuntos || 0,
-                        racha: stats.racha || 0
+                        racha: stats.racha || 0,
+                        motivacion: stats.motivacion || 'Cuidar el planeta'
                     }));
+                    localStorage.setItem('motivacion', stats.motivacion || 'Cuidar el planeta');
                 })
                 .catch(() => {});
         }
@@ -42,10 +48,12 @@ const Perfil: React.FC = () => {
         const nombre = localStorage.getItem('nombre');
         const correo = localStorage.getItem('correo');
         const fecha = localStorage.getItem('fechaRegistro');
+        const motivacion = localStorage.getItem('motivacion');
         if (nombre) setDatos(prev => ({...prev, nombre}));
         if (correo) setDatos(prev => ({...prev, correo}));
         if (fecha) setDatos(prev =>({...prev, miembro: new Date(fecha).toLocaleDateString('es-CO', {month: 'long', year: 'numeric'}) }))
-    }, []); 
+        if (motivacion) setDatos(prev => ({...prev, motivacion}));
+    }); 
 
     const showToast = (mensaje: string, tipo: 'success' | 'error' = 'success') => {
         setMensajeToast(mensaje);
@@ -53,12 +61,21 @@ const Perfil: React.FC = () => {
         setMostrarToast(true);
     };
 
-    const handleChange = (campo: string, valor: string) => {
-        setDatos({ ...datos, [campo]: valor });
+    const handleChange = (campo: string, valor: string | null | undefined) => {
+        const v = valor ?? '';
+        if (campo === 'nombre') nombreRef.current = v;
+        else if (campo === 'correo') correoRef.current = v;
+        else if (campo === 'motivacion') motivacionRef.current = v;
+        setDatos(prev => ({ ...prev, [campo]: v }));
     };
 
     const handleGuardar = async() => {
         const correoOriginal = localStorage.getItem('correo');
+        const nuevoNombre = nombreRef.current;
+        const nuevoCorreo = correoRef.current;
+        const nuevaMotivacion = motivacionRef.current;
+
+        console.log('▶ Refs:', { nuevoNombre, nuevoCorreo, nuevaMotivacion });
 
         try{
             const res = await fetch("http://localhost:3000/actualizarUsuario", {
@@ -66,18 +83,34 @@ const Perfil: React.FC = () => {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     correo: correoOriginal,
-                    nuevoNombre: datos.nombre, 
-                    nuevoCorreo: datos.correo
+                    nuevoNombre,
+                    nuevoCorreo,
+                    nuevaMotivacion
                 })
             });
             const data = await res.json()
 
+            console.log('◀ Respuesta:', { ok: res.ok, status: res.status, data });
+
             if(res.ok){
-                localStorage.setItem('nombre', datos.nombre);
-                localStorage.setItem('correo', datos.correo); 
+                localStorage.setItem('nombre', nuevoNombre);
+                localStorage.setItem('correo', nuevoCorreo);
+                localStorage.setItem('motivacion', nuevaMotivacion);
                 showToast('Perfil actualizado correctamente', 'success');
                 setEditando(false);
             } else{
+                const nombreFallback = localStorage.getItem('nombre') || datos.nombre;
+                const correoFallback = localStorage.getItem('correo') || datos.correo;
+                const motivacionFallback = localStorage.getItem('motivacion') || datos.motivacion;
+                nombreRef.current = nombreFallback;
+                correoRef.current = correoFallback;
+                motivacionRef.current = motivacionFallback;
+                setDatos(prev => ({
+                    ...prev,
+                    nombre: nombreFallback,
+                    correo: correoFallback,
+                    motivacion: motivacionFallback
+                }));
                 showToast(data.mensaje, 'error');
             }
         } catch (error) {
@@ -92,7 +125,7 @@ const Perfil: React.FC = () => {
     };
 
     const getNivelTexto = (nivel: number) => {
-        if (nivel >= 11) return 'Eco Experto';
+        if (nivel >= 10) return 'Eco Experto';
         if (nivel >= 5) return 'Eco Intermedio';
         return 'Eco Principiante';
     };
@@ -124,7 +157,7 @@ const Perfil: React.FC = () => {
                     </div>
 
                     {editando ? (
-                        <IonInput className="input-edit" value={datos.nombre} onIonChange={e => handleChange('nombre', e.detail.value!)}/>
+                        <IonInput className="input-edit" value={datos.nombre} onIonChange={e => handleChange('nombre', e.detail.value)}/>
                     ) : (
                         <h2>{datos.nombre || 'Usuario'}</h2>
                     )}
@@ -135,6 +168,12 @@ const Perfil: React.FC = () => {
                         <div className="nivel-badge">
                             <span className="nivel-numero">Nivel {datos.nivel}</span>
                             <span className="nivel-nombre">{getNivelTexto(datos.nivel)}</span>
+                        </div>
+                        <div className="progresso-nivel">
+                            <div className="progresso-bar-bg">
+                                <div className="progresso-bar-fill" style={{ width: `${Math.min((datos.ecoPuntos / (25 * datos.nivel * (datos.nivel + 1))) * 100, 100)}%` }} />
+                            </div>
+                            <span className="progresso-texto">{datos.ecoPuntos} / {25 * datos.nivel * (datos.nivel + 1)} pts</span>
                         </div>
                         <div className="stats-mini">
                             <span><EcoIcon emoji="🔥" /> {datos.racha}</span>
@@ -150,7 +189,7 @@ const Perfil: React.FC = () => {
                         <div className="info-item">
                             <span>Correo: </span>
                             {editando ? (
-                                <IonInput value={datos.correo} onIonChange={e => handleChange('correo', e.detail.value!)} />
+                                <IonInput value={datos.correo} onIonChange={e => handleChange('correo', e.detail.value)} />
                             ) : (
                                 <span>{datos.correo}</span>
                             )}
@@ -158,11 +197,7 @@ const Perfil: React.FC = () => {
 
                         <div className="info-item">
                             <span>Universidad: </span>
-                            {editando ? (
-                                <IonInput value={datos.universidad} onIonChange={e => handleChange('universidad', e.detail.value!)}/>
-                            ) : (
-                                <span>{datos.universidad}</span>
-                            )}
+                            <span>{datos.universidad}</span>
                         </div>
 
                         <div className="info-item">
@@ -173,7 +208,7 @@ const Perfil: React.FC = () => {
                         <div className="info-item">
                             <span>Motivación: </span>
                             {editando ? (
-                                <IonInput value={datos.motivacion} onIonChange={e => handleChange('motivacion', e.detail.value!)} />
+                                <IonInput value={datos.motivacion} onIonChange={e => handleChange('motivacion', e.detail.value)} />
                             ) : (
                                 <span>{datos.motivacion}</span>
                             )}

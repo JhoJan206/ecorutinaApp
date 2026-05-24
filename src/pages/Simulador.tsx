@@ -76,8 +76,8 @@ const Simulador: React.FC = () => {
   };
 
   const formatFecha = (fecha: string) => {
-    const d = new Date(fecha);
-    return d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+    const d = new Date(fecha + (fecha.includes('T') ? '' : 'T00:00:00'));
+    return d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', timeZone: 'America/Bogota' });
   };
 
   const getMaxHistorial = () => {

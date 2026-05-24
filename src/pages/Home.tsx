@@ -1,6 +1,6 @@
-import { IonPage, IonContent, IonButton, IonToast, IonSpinner } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonToast, IonSpinner, useIonViewWillEnter } from '@ionic/react';
 import { useHistory } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import EcoIcon from '../components/EcoIcon';
 import './Home.css';
 
@@ -48,16 +48,16 @@ const Home: React.FC = () => {
     };
 
     const getNivelTexto = (nivel: number) => {
-        if (nivel >= 11) return 'Experto';
+        if (nivel >= 10) return 'Experto';
         if (nivel >= 5) return 'Intermedio';
         return 'Principiante';
     };
 
-    useEffect(() => {
+    useIonViewWillEnter(() => {
       const nombreGuardado = localStorage.getItem('nombre');
       if (nombreGuardado) setNombre(nombreGuardado);
       cargarDatos();
-    }, []);
+    });
 
     const showToastMessage = (mensaje: string, color: 'success' | 'danger' = 'success') => {
         setToastMessage(mensaje);

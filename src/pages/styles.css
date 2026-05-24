@@ -2,6 +2,10 @@ ion-content {
   --background: none;
   background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%);
 }
+h2 {
+  margin-top: 8px;
+  font-size: 1.5rem;
+}
 .header-logs{
   padding: 30px 20px 20px;
   text-align: center;
@@ -16,15 +20,15 @@ ion-content {
   margin-bottom: 10px;
 }
 .logo-img {
-  width: 70px;
-  height: 70px;
+  width: 157px;
+  height: 80px;
   object-fit: contain;
 }
 .header-logs h1,
 .header-logs h2 {
   color: white;
   font-size: 24px;
-  margin: 10px 0 5px;
+  margin: 0;
   font-weight: 600;
 }
 .header-logs p {
@@ -88,7 +92,7 @@ ion-content {
 }
 .input-group label {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #1B4332;
   margin-bottom: 8px;

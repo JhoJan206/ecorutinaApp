@@ -10,9 +10,9 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
-    const [toastColor, setToastColor] = useState<'success' | 'danger'>('danger');
+    const [toastColor, setToastColor] = useState<'success' | 'danger' | 'warning'>('danger');
 
-    const showToastMessage = (mensaje: string, color: 'success' | 'danger' = 'danger') => {
+    const showToastMessage = (mensaje: string, color: 'success' | 'danger' | 'warning' = 'danger') => {
         setToastMessage(mensaje);
         setToastColor(color);
         setShowToast(true);
@@ -108,7 +108,7 @@ const Login: React.FC = () => {
                                 onInput={(e) => setPassword(e.currentTarget.value as string)}
                             />
                         </div>
-                        <p className="forgot-pass">¿Olvidaste tu contraseña?</p>
+                        <p className="forgot-pass" onClick={() => showToastMessage('Proximanete...', 'warning')}>¿Olvidaste tu contraseña?</p>
 
                         <IonButton expand="block" className="btn-primary" onClick={handleLogin}>
                             Iniciar sesión
@@ -118,7 +118,7 @@ const Login: React.FC = () => {
                             <span>o continúa con</span>
                         </div>
                         
-                        <IonButton expand="block" className="btn-secondary">
+                        <IonButton expand="block" className="btn-secondary" onClick={() => showToastMessage('Proximanete...', 'warning')}>
                             <span className="google-icon">G</span> Google
                         </IonButton>
                         

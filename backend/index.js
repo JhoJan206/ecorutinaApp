@@ -112,16 +112,19 @@ app.post("/login", (req, res) => {
 
 //ACTUALIZAR perfil
 app.put("/actualizarUsuario", (req, res) => {
-    const {correo, nuevoNombre, nuevoCorreo} = req.body;
+    const {correo, nuevoNombre, nuevoCorreo, nuevaMotivacion} = req.body;
 
     if(!correo || !nuevoNombre || !nuevoCorreo) {
         return res.status(400).json({mensaje: "Datos incompletos"});
     }
 
-    const query = "UPDATE usuarios SET nombre = ?, correo = ? WHERE correo = ?";
+    const query = "UPDATE usuarios SET nombre = ?, correo = ?, motivacion = ? WHERE correo = ?";
 
-    bd.query(query, [nuevoNombre, nuevoCorreo, correo], (err, result) => {
+    bd.query(query, [nuevoNombre, nuevoCorreo, nuevaMotivacion || 'Cuidar el planeta', correo], (err, result) => {
         if(err){
+            if(err.errno === 1062) {
+                return res.status(409).json({mensaje: "Ese correo ya está registrado"});
+            }
             console.log(err);
             return res.status(500).json({mensaje: "Error al actualizar"});
         }
@@ -135,8 +138,10 @@ app.put("/actualizarUsuario", (req, res) => {
 //OBTENER STATS del usuario
 app.get("/stats/:userId", (req, res) => {
     const userId = req.params.userId;
+    const hoy = getFechaColombia();
+    const ayer = getFechaColombia(-1);
 
-    const query = "SELECT racha, ecoPuntos, nivel FROM usuarios WHERE id = ?";
+    const query = "SELECT racha, ecoPuntos, nivel, fecha_ultima_racha, motivacion FROM usuarios WHERE id = ?";
 
     bd.query(query, [userId], (err, result) => {
         if(err) {
@@ -146,9 +151,37 @@ app.get("/stats/:userId", (req, res) => {
         if(result.length === 0) {
             return res.status(404).json({mensaje: "Usuario no encontrado"});
         }
-        res.json(result[0]);
+
+        const usuario = result[0];
+
+        //Recalcular nivel según puntos acumulados (red de seguridad)
+        const nivelEsperado = nivelDesdePuntos(usuario.ecoPuntos);
+        if (nivelEsperado > usuario.nivel) {
+            const updateNivel = "UPDATE usuarios SET nivel = ? WHERE id = ?";
+            bd.query(updateNivel, [nivelEsperado, userId], (err) => {
+                if (!err) usuario.nivel = nivelEsperado;
+                enviarStats(usuario, userId, hoy, ayer, res);
+            });
+        } else {
+            enviarStats(usuario, userId, hoy, ayer, res);
+        }
     });
 });
+
+const enviarStats = (usuario, userId, hoy, ayer, res) => {
+    //Auto-reset: si la última actividad fue antes de ayer, la racha se perdió
+    if (usuario.fecha_ultima_racha && usuario.fecha_ultima_racha < ayer) {
+        const resetQuery = "UPDATE usuarios SET racha = 0, fecha_ultima_racha = ? WHERE id = ? AND fecha_ultima_racha < ?";
+        bd.query(resetQuery, [hoy, userId, ayer], (err) => {
+            if (!err) {
+                usuario.racha = 0;
+            }
+            res.json({ racha: 0, ecoPuntos: usuario.ecoPuntos, nivel: usuario.nivel, motivacion: usuario.motivacion });
+        });
+    } else {
+        res.json({ racha: usuario.racha, ecoPuntos: usuario.ecoPuntos, nivel: usuario.nivel, motivacion: usuario.motivacion });
+    }
+};
 
 //OBTENER hábitos por categoría (para Home)
 app.get("/habitos", (req, res) => {
@@ -173,9 +206,9 @@ app.get("/habitos/:nivel", (req, res) => {
     const nivel = parseInt(req.params.nivel);
     
     let nivelesIncluir = [1];
-    if(nivel >= 5 && nivel <= 10) {
+    if(nivel >= 5 && nivel <= 9) {
         nivelesIncluir = [1, 2];
-    } else if(nivel >= 11) {
+    } else if(nivel >= 10) {
         nivelesIncluir = [1, 2, 3];
     }
 
@@ -219,7 +252,7 @@ app.get("/habitos/:nivel", (req, res) => {
 //OBTENER progreso del usuario HOY
 app.get("/progreso/:userId", (req, res) => {
     const userId = req.params.userId;
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = getFechaColombia();
 
     const query = `
         SELECT p.habit_id, p.completado, h.nombre, h.categoria_id, c.nombre as categoria
@@ -241,7 +274,7 @@ app.get("/progreso/:userId", (req, res) => {
 //COMPLETAR un hábito (marcar como hecho)
 app.post("/completarHabito", (req, res) => {
     const { usuarioId, habitId } = req.body;
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = getFechaColombia();
 
     if(!usuarioId || !habitId) {
         return res.status(400).json({mensaje: "Datos incompletos"});
@@ -304,6 +337,22 @@ app.post("/completarHabito", (req, res) => {
 
                     //Actualizar racha
                     actualizarRacha(usuarioId);
+
+                    //Verificar si sube de nivel según puntos acumulados
+                    const nivelQuery = "SELECT ecoPuntos, nivel FROM usuarios WHERE id = ?";
+                    bd.query(nivelQuery, [usuarioId], (err, userData) => {
+                        if (err || userData.length === 0) return;
+
+                        const { ecoPuntos: totalPts, nivel: nivelActual } = userData[0];
+                        const nivelEsperado = nivelDesdePuntos(totalPts);
+
+                        if (nivelEsperado > nivelActual) {
+                            const updateNivel = "UPDATE usuarios SET nivel = ? WHERE id = ?";
+                            bd.query(updateNivel, [nivelEsperado, usuarioId], (err) => {
+                                if (err) console.error("Error al subir nivel:", err);
+                            });
+                        }
+                    });
 
                     res.json({mensaje: "Hábito completado", puntosGanados: puntos, co2Ahorrado: co2Kg});
                 });
@@ -395,40 +444,53 @@ app.get("/recompensas", (req, res) => {
     });
 });
 
+//Obtener fecha en Colombia (UTC-5) con offset opcional de días
+const getFechaColombia = (diasOffset = 0) => {
+    const ahora = new Date();
+    const fecha = new Date(ahora.getTime() + diasOffset * 86400000);
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(fecha);
+};
+
+//Calcular nivel según puntos acumulados (fórmula: N × 50 pts entre niveles)
+const nivelDesdePuntos = (ecoPuntos) => {
+    return Math.floor((1 + Math.sqrt(1 + 0.16 * ecoPuntos)) / 2);
+};
+
 //ACTUALIZAR racha del usuario
 const actualizarRacha = (usuarioId) => {
-    const hoy = new Date().toISOString().split('T')[0];
-    const ayer = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    
-    //Verificar si completó hábitos ayer para mantener la racha
+    const hoy = getFechaColombia();
+    const ayer = getFechaColombia(-1);
+
+    //Consulta combinada: si completó ayer + fecha de última actualización de racha
     const queryCheck = `
-        SELECT COUNT(*) as total
-        FROM progreso
-        WHERE usuario_id = ? AND fecha = ? AND completado = TRUE
+        SELECT 
+            (SELECT COUNT(*) FROM progreso WHERE usuario_id = ? AND fecha = ? AND completado = TRUE) as completo_ayer,
+            fecha_ultima_racha 
+        FROM usuarios 
+        WHERE id = ?
     `;
 
-    bd.query(queryCheck, [usuarioId, ayer], (err, result) => {
-        if(err) return;
+    bd.query(queryCheck, [usuarioId, ayer, usuarioId], (err, result) => {
+        if (err || result.length === 0) return;
 
-        const completadoAyer = result[0].total > 0;
+        const { completo_ayer, fecha_ultima_racha } = result[0];
 
-        //Obtener racha actual
-        const queryRacha = "SELECT racha FROM usuarios WHERE id = ?";
-        bd.query(queryRacha, [usuarioId], (err, usuario) => {
-            if(err || usuario.length === 0) return;
+        //Si ya se actualizó hoy, salir (evita múltiples incrementos por día)
+        if (fecha_ultima_racha === hoy) return;
 
-            let nuevaRacha = usuario[0].racha || 0;
-
-            if(completadoAyer) {
-                nuevaRacha += 1;
-            } else {
-                nuevaRacha = 0;
-            }
-
-            //Actualizar racha
-            const updateRacha = "UPDATE usuarios SET racha = ? WHERE id = ?";
-            bd.query(updateRacha, [nuevaRacha, usuarioId], (err) => {});
-        });
+        if (completo_ayer > 0) {
+            //Continúa la racha: UPDATE atómico con WHERE que evita race conditions
+            const updateQuery = "UPDATE usuarios SET racha = racha + 1, fecha_ultima_racha = ? WHERE id = ? AND (fecha_ultima_racha IS NULL OR fecha_ultima_racha < ?)";
+            bd.query(updateQuery, [hoy, usuarioId, hoy], (err) => {
+                if (err) console.error("Error al actualizar racha:", err);
+            });
+        } else {
+            //Nueva racha comienza en 1
+            const updateQuery = "UPDATE usuarios SET racha = 1, fecha_ultima_racha = ? WHERE id = ? AND (fecha_ultima_racha IS NULL OR fecha_ultima_racha < ?)";
+            bd.query(updateQuery, [hoy, usuarioId, hoy], (err) => {
+                if (err) console.error("Error al actualizar racha:", err);
+            });
+        }
     });
 };
 

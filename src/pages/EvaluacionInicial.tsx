@@ -88,12 +88,12 @@ const EvaluacionInicial: React.FC = () => {
         const suma = respuestasFinales.reduce((a, b) => a + b, 0);
         
         let nivelCalculado: number;
-        if (suma <= 10) {
-            nivelCalculado = Math.floor(Math.random() * 4) + 1;
+        if (suma <= 8) {
+            nivelCalculado = 1 + Math.floor((suma - 4) * 3 / 4);
         } else if (suma <= 13) {
-            nivelCalculado = Math.floor(Math.random() * 6) + 5;
+            nivelCalculado = 5 + (suma - 9);
         } else {
-            nivelCalculado = Math.floor(Math.random() * 10) + 11;
+            nivelCalculado = 10 + Math.floor((suma - 14) * 10 / 2);
         }
 
         const userId = localStorage.getItem('userId');

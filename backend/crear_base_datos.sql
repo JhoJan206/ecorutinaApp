@@ -14,11 +14,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     password VARCHAR(255) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     universidad VARCHAR(200) DEFAULT 'UDES, Bucaramanga',
-    motivacion VARCHAR(255) DEFAULT 'Cuidar el planeta',
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
     racha INT DEFAULT 0,
+    fecha_ultima_racha DATE NULL DEFAULT NULL,
     ecoPuntos INT DEFAULT 0,
-    nivel INT DEFAULT 1
+    nivel INT DEFAULT 1,
+    motivacion VARCHAR(255) DEFAULT 'Cuidar el planeta'
 );
 
 -- 3. Tabla categorias (agua, energia, residuos, etc.)

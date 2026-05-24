@@ -11,9 +11,9 @@ const Registro: React.FC = () => {
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
-    const [toastColor, setToastColor] = useState<'success' | 'danger'>('success');
+    const [toastColor, setToastColor] = useState<'success' | 'danger' | 'warning'>('success');
 
-    const showToastMessage = (mensaje: string, color: 'success' | 'danger' = 'success') => {
+    const showToastMessage = (mensaje: string, color: 'success' | 'danger' | 'warning' = 'success') => {
         setToastMessage(mensaje);
         setToastColor(color);
         setShowToast(true);
@@ -123,7 +123,7 @@ const Registro: React.FC = () => {
                             <span>o continúa con</span>
                         </div>
                         
-                        <IonButton expand="block" className="btn-secondary">
+                        <IonButton expand="block" className="btn-secondary" onClick={() => showToastMessage('Proximanete...', 'warning')}>
                             <span className="google-icon">G</span> Google
                         </IonButton>
                         

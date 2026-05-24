@@ -1,6 +1,6 @@
-import { IonPage, IonContent, IonButton, IonToast, IonIcon } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonToast, IonIcon, useIonViewWillEnter } from '@ionic/react';
 import { useHistory } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { chevronBackOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
 import './Recompensas.css';
@@ -22,9 +22,9 @@ const Recompensas: React.FC = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
 
-    useEffect(() => {
+    useIonViewWillEnter(() => {
         cargarDatos();
-    }, []);
+    });
 
     const cargarDatos = async () => {
         const userId = localStorage.getItem('userId');
