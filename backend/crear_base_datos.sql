@@ -57,13 +57,16 @@ CREATE TABLE IF NOT EXISTS progreso (
     UNIQUE KEY unique_progreso (usuario_id, habit_id, fecha)
 );
 
--- 6. Tabla recompensas
+-- 6. Tabla recompensas (logros)
 CREATE TABLE IF NOT EXISTS recompensas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
     descripcion TEXT,
     puntosRequeridos INT NOT NULL,
-    icono VARCHAR(50)
+    icono VARCHAR(50),
+    tipo VARCHAR(20) DEFAULT 'puntos',
+    condicion_valor INT DEFAULT NULL,
+    condicion_extra VARCHAR(100) DEFAULT NULL
 );
 
 -- 7. Tabla evaluaciones (respuestas del cuestionario inicial)
@@ -163,13 +166,17 @@ INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, co2_kg, nivel) V
 (4, 'Adquirir vehículo eléctrico o híbrido', 'Movilidad cero emisiones', 50, 1.500, 3),
 (4, 'Compensar huella de carbono', 'Neutralizar emisiones', 40, 1.000, 3);
 
-INSERT INTO recompensas (nombre, descripcion, puntosRequeridos, icono) VALUES
-('Semana Verde', 'Badge por completar 7 días seguidos', 100, '🌱'),
-('Maestro del Agua', 'Badge por completar hábitos de agua', 150, '💧'),
-('Ahorrador de Energía', 'Badge por completar hábitos de energía', 150, '⚡'),
-('Héroe Reciclaje', 'Badge por completar hábitos de residuos', 150, '♻️'),
-('Viajero Verde', 'Badge por completar hábitos de transporte', 150, '🚲'),
-('Eco Experto', 'Badge por completar todos los hábitos', 500, '🏆');
+INSERT INTO recompensas (nombre, descripcion, puntosRequeridos, icono, tipo, condicion_valor, condicion_extra) VALUES
+('Primeros Pasos',  'Acumula tus primeros 50 EcoPuntos',   50,  '🚶‍♂️', 'puntos',   NULL, NULL),
+('Racha Inicial',   'Completa 3 días seguidos',             3,   '🔥',   'racha',   NULL, NULL),
+('Ahorrador Nato',   'Ahorra 5 kg de CO₂',                  5,   '🌱',   'co2',     NULL, NULL),
+('Dedicado',         'Completa 25 hábitos en total',         25,  '✅',   'habitos', NULL, NULL),
+('Semana Verde',     'Mantén una racha de 7 días',           7,   '🌿',   'racha',   NULL, NULL),
+('Maestro del Agua', 'Completa 15 hábitos de agua',          15,  '💧',   'categoria', NULL, 'agua'),
+('Amigo del Planeta','Acumula 250 EcoPuntos',               250,  '🌍',   'puntos',  NULL, NULL),
+('Héroe del Reciclaje','Completa 15 hábitos de residuos',   15,  '♻️',   'categoria', NULL, 'residuos'),
+('Eco Experto',      'Acumula 500 EcoPuntos',               500,  '🏆',   'puntos',  NULL, NULL),
+('Leyenda Verde',    'Acumula 1000 EcoPuntos',              1000, '👑',   'puntos',  NULL, NULL);
 
 -- ============================================
 -- ACTUALIZAR BASE DE DATOS EXISTENTE
@@ -177,6 +184,11 @@ INSERT INTO recompensas (nombre, descripcion, puntosRequeridos, icono) VALUES
 -- ============================================
 
 -- Agregar columna nivel si no existe
+
+-- Agregar columnas a recompensas para logros variados
+ALTER TABLE recompensas ADD COLUMN tipo VARCHAR(20) DEFAULT 'puntos';
+ALTER TABLE recompensas ADD COLUMN condicion_valor INT DEFAULT NULL;
+ALTER TABLE recompensas ADD COLUMN condicion_extra VARCHAR(100) DEFAULT NULL;
 ALTER TABLE habitos ADD COLUMN nivel TINYINT DEFAULT 1;
 
 -- Agregar columna co2_kg si no existe (para calcular CO2 ahorrado)

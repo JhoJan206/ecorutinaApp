@@ -42,7 +42,10 @@ const Perfil: React.FC = () => {
                     }));
                     localStorage.setItem('motivacion', stats.motivacion || 'Cuidar el planeta');
                 })
-                .catch(() => {});
+                .catch(err => {
+                    console.error('Error al cargar stats:', err);
+                    showToast('Error al cargar datos del perfil', 'error');
+                });
         }
 
         const nombre = localStorage.getItem('nombre');

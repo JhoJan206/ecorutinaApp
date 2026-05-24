@@ -23,7 +23,7 @@ const EvaluacionInicial: React.FC = () => {
                     history.push('/home');
                 }
             })
-            .catch(() => {});
+            .catch(err => console.error('Error al verificar evaluación:', err));
     }, []);
 
     const preguntas = [
@@ -100,7 +100,7 @@ const EvaluacionInicial: React.FC = () => {
 
         if (userId) {
             try {
-                await fetch('http://localhost:3000/evaluacion', {
+                const res = await fetch('http://localhost:3000/evaluacion', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -109,6 +109,10 @@ const EvaluacionInicial: React.FC = () => {
                         nivel: nivelCalculado
                     })
                 });
+                if (!res.ok) {
+                    const data = await res.json();
+                    console.error('Error al guardar evaluación:', data.mensaje);
+                }
             } catch (error) {
                 console.error('Error al guardar evaluación:', error);
             }

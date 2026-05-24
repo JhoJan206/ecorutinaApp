@@ -1,7 +1,7 @@
 import { IonPage, IonContent, IonButton, IonToast, IonSpinner, IonIcon } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
-import { chevronBackOutline } from 'ionicons/icons';
+import { chevronBackOutline, barChartOutline, waterOutline, flashOutline, refreshOutline, bicycleOutline, leafOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
 import './Simulador.css';
 
@@ -37,6 +37,14 @@ const Simulador: React.FC = () => {
   const [equivalencias, setEquivalencias] = useState<Equivalencias | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  const getCategoriaIcon = (nombre: string) => {
+    if (nombre.toLowerCase().includes('agua')) return waterOutline;
+    if (nombre.toLowerCase().includes('energ')) return flashOutline;
+    if (nombre.toLowerCase().includes('residuo') || nombre.toLowerCase().includes('recicl')) return refreshOutline;
+    if (nombre.toLowerCase().includes('transporte') || nombre.toLowerCase().includes('verde')) return bicycleOutline;
+    return leafOutline;
+  };
 
   const metaMensual = 50;
   const progresoMeta = Math.min((co2Total / metaMensual) * 100, 100);
@@ -136,13 +144,13 @@ const Simulador: React.FC = () => {
               </div>
 
               <div className="categorias-section">
-                <h3><EcoIcon emoji="📊" /> Por Categoría</h3>
+                <h3><IonIcon icon={barChartOutline} /> Por Categoría</h3>
                 {categorias.length === 0 ? (
                   <p className="empty-text">Completa hábitos para ver el desglose</p>
                 ) : (
                   categorias.map((cat, idx) => (
                     <div key={idx} className="categoria-card">
-                      <div className="categoria-icon"><EcoIcon emoji={cat.icono} /></div>
+                      <div className="categoria-icon"><IonIcon icon={getCategoriaIcon(cat.categoria)} /></div>
                       <div className="categoria-info">
                         <h4>{cat.categoria}</h4>
                         <p>{cat.completados} hábitos</p>

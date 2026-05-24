@@ -24,7 +24,9 @@ import {
   checkmarkCircleOutline,
   starOutline,
   checkmarkOutline,
-  ellipseOutline
+  ellipseOutline,
+  walkOutline,
+  diamondOutline
 } from 'ionicons/icons';
 
 const emojiMap: Record<string, string> = {
@@ -42,7 +44,6 @@ const emojiMap: Record<string, string> = {
   '\u{1F3C6}': 'trophyOutline',
   '\u{1F464}': 'personOutline',
   '\u{1F3AF}': 'locateOutline',
-  '\u{1F4CA}': 'barChartOutline',
   '\u{1F4C8}': 'trendingUpOutline',
   '\u{1F4A1}': 'bulbOutline',
   '\u{1F697}': 'carOutline',
@@ -56,9 +57,11 @@ const emojiMap: Record<string, string> = {
   '\u2B50': 'starOutline',
   '\u2713': 'checkmarkOutline',
   '\u25CB': 'ellipseOutline',
+  '\u{1F6B6}': 'walkOutline',
+  '\u{1F451}': 'diamondOutline',
 };
 
-const stripVariationSelector = (s: string) => s.replace(/\uFE0F/g, '');
+const stripVariationSelector = (s: string) => s.replace(/\uFE0F/g, '').replace(/\u200D.*$/g, '');
 
 const iconMap: Record<string, string> = {
   'flameOutline': flameOutline,
@@ -86,6 +89,8 @@ const iconMap: Record<string, string> = {
   'starOutline': starOutline,
   'checkmarkOutline': checkmarkOutline,
   'ellipseOutline': ellipseOutline,
+  'walkOutline': walkOutline,
+  'diamondOutline': diamondOutline,
 };
 
 interface EcoIconProps {

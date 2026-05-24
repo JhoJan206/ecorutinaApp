@@ -11,13 +11,31 @@ interface Recompensa {
   descripcion: string;
   puntosRequeridos: number;
   icono: string;
+  tipo: string;
+  condicion_valor: number | null;
+  condicion_extra: string | null;
   desbloqueada: boolean;
+}
+
+interface CategoriaCo2 {
+  categoria: string;
+  icono: string;
+  completados: number;
+  co2_ahorrado: number;
+}
+
+interface Co2Data {
+  co2_total: number;
+  habitos_totales: number;
+  por_categoria: CategoriaCo2[];
 }
 
 const Recompensas: React.FC = () => {
     const history = useHistory();
     const [recompensas, setRecompensas] = useState<Recompensa[]>([]);
     const [ecoPuntos, setEcoPuntos] = useState(0);
+    const [racha, setRacha] = useState(0);
+    const [co2Data, setCo2Data] = useState<Co2Data | null>(null);
     const [loading, setLoading] = useState(true);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -34,19 +52,24 @@ const Recompensas: React.FC = () => {
         }
 
         try {
-            const [statsRes, recompensasRes] = await Promise.all([
+            const [statsRes, recompensasRes, co2Res] = await Promise.all([
                 fetch(`http://localhost:3000/stats/${userId}`),
-                fetch('http://localhost:3000/recompensas')
+                fetch('http://localhost:3000/recompensas'),
+                fetch(`http://localhost:3000/co2/${userId}`)
             ]);
 
             const stats = await statsRes.json();
             setEcoPuntos(stats.ecoPuntos || 0);
+            setRacha(stats.racha || 0);
+
+            const co2: Co2Data = await co2Res.json();
+            setCo2Data(co2);
 
             const recompensasData: Recompensa[] = await recompensasRes.json();
-            
+
             const recompensasConEstado = recompensasData.map(r => ({
                 ...r,
-                desbloqueada: (stats.ecoPuntos || 0) >= r.puntosRequeridos
+                desbloqueada: checkDesbloqueada(r, stats, co2)
             }));
 
             setRecompensas(recompensasConEstado);
@@ -57,9 +80,54 @@ const Recompensas: React.FC = () => {
         }
     };
 
-    const getProgreso = (puntosRequeridos: number) => {
-        const progreso = (ecoPuntos / puntosRequeridos) * 100;
-        return Math.min(progreso, 100);
+    const checkDesbloqueada = (r: Recompensa, stats: any, co2: Co2Data): boolean => {
+        switch (r.tipo) {
+            case 'racha':
+                return (stats.racha || 0) >= r.puntosRequeridos;
+            case 'habitos':
+                return (co2.habitos_totales || 0) >= r.puntosRequeridos;
+            case 'co2':
+                return (co2.co2_total || 0) >= r.puntosRequeridos;
+            case 'categoria':
+                const cat = co2.por_categoria?.find(c =>
+                    r.condicion_extra && c.categoria.toLowerCase().includes(r.condicion_extra.toLowerCase())
+                );
+                return cat ? (cat.completados || 0) >= r.puntosRequeridos : false;
+            default:
+                return (stats.ecoPuntos || 0) >= r.puntosRequeridos;
+        }
+    };
+
+    const getValorActual = (r: Recompensa): number => {
+        switch (r.tipo) {
+            case 'racha': return racha;
+            case 'habitos': return co2Data?.habitos_totales || 0;
+            case 'co2': return co2Data?.co2_total || 0;
+            case 'categoria': {
+                const cat = co2Data?.por_categoria?.find(c =>
+                    r.condicion_extra && c.categoria.toLowerCase().includes(r.condicion_extra.toLowerCase())
+                );
+                return cat?.completados || 0;
+            }
+            default: return ecoPuntos;
+        }
+    };
+
+    const getTextoProgreso = (r: Recompensa): string => {
+        const actual = getValorActual(r);
+        const meta = r.puntosRequeridos;
+        switch (r.tipo) {
+            case 'racha': return `${actual} / ${meta} días`;
+            case 'habitos': return `${actual} / ${meta} hábitos`;
+            case 'co2': return `${actual.toFixed(1)} / ${meta} kg CO₂`;
+            case 'categoria': return `${actual} / ${meta} hábitos`;
+            default: return `${actual} / ${meta} pts`;
+        }
+    };
+
+    const getProgreso = (r: Recompensa): number => {
+        const actual = getValorActual(r);
+        return Math.min((actual / r.puntosRequeridos) * 100, 100);
     };
 
     const getRecompensasDesbloqueadas = () => {
@@ -83,13 +151,13 @@ const Recompensas: React.FC = () => {
                     </IonButton>
 
                     <div className="header-content">
-                        <h1><EcoIcon emoji="🏆" /> Recompensas</h1>
+                        <h1><EcoIcon emoji="🏆" /> Logros</h1>
                         <p className="puntos-total">
                             <EcoIcon emoji="🌱" className="icon" />
                             <strong>{ecoPuntos}</strong> EcoPuntos
                         </p>
                         <p className="progreso-resumen">
-                            {getRecompensasDesbloqueadas()} de {recompensas.length} recompensas desbloqueadas
+                            {getRecompensasDesbloqueadas()} de {recompensas.length} logros desbloqueados
                         </p>
                     </div>
                 </div>
@@ -117,11 +185,11 @@ const Recompensas: React.FC = () => {
                                             <div className="progress-bar">
                                                 <div 
                                                     className="progress-fill" 
-                                                    style={{ width: `${getProgreso(recompensa.puntosRequeridos)}%` }}
+                                                    style={{ width: `${getProgreso(recompensa)}%` }}
                                                 ></div>
                                             </div>
                                             <span className="progress-text">
-                                                {ecoPuntos} / {recompensa.puntosRequeridos} pts
+                                                {getTextoProgreso(recompensa)}
                                             </span>
                                         </div>
                                     </div>
@@ -133,11 +201,12 @@ const Recompensas: React.FC = () => {
                             ))}
 
                             <div className="logros-section">
-                                <h3><EcoIcon emoji="🎯" /> ¿Cómo ganar más puntos?</h3>
+                                <h3><EcoIcon emoji="🎯" /> ¿Cómo ganar logros?</h3>
                                 <ul>
-                                    <li><EcoIcon emoji="✅" /> Completa hábitos diarios</li>
-                                    <li><EcoIcon emoji="✅" /> Mantén tu racha de hábitos</li>
-                                    <li><EcoIcon emoji="✅" /> Cuantos más hábitos completes, más puntos ganas</li>
+                                    <li><EcoIcon emoji="🌱" /> Acumula EcoPuntos completando hábitos</li>
+                                    <li><EcoIcon emoji="🔥" /> Mantén tu racha de días seguidos</li>
+                                    <li><EcoIcon emoji="🌍" /> Ahorra CO₂ con hábitos sostenibles</li>
+                                    <li><EcoIcon emoji="💧" /> Especialízate en categorías (agua, reciclaje...)</li>
                                 </ul>
                             </div>
                         </>

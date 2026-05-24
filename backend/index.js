@@ -302,7 +302,9 @@ app.post("/completarHabito", (req, res) => {
             //Obtener puntos y co2_kg del hábito
             const getHabito = "SELECT puntos, co2_kg FROM habitos WHERE id = ?";
             bd.query(getHabito, [habitId], (err, habito) => {
-                if(err || habito.length === 0) return;
+                if(err || habito.length === 0) {
+                    return res.status(400).json({mensaje: "Hábito no encontrado"});
+                }
 
                 const puntos = habito[0].puntos;
                 const co2Kg = parseFloat(habito[0].co2_kg) || 0.1;
@@ -433,7 +435,7 @@ app.get("/tieneEvaluacion/:userId", (req, res) => {
 
 //OBTENER recompensas
 app.get("/recompensas", (req, res) => {
-    const query = "SELECT id, nombre, descripcion, puntosRequeridos, icono FROM recompensas ORDER BY puntosRequeridos";
+    const query = "SELECT id, nombre, descripcion, puntosRequeridos, icono, tipo, condicion_valor, condicion_extra FROM recompensas ORDER BY id";
     
     bd.query(query, (err, result) => {
         if(err) {
