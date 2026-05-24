@@ -6,11 +6,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const conexion = mysql.createConnection({
-    host: process.env.MYSQLHOST || process.env.DB_HOST || "127.0.0.1",
-    user: process.env.MYSQLUSER || process.env.DB_USER || "root",
-    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || "",
-    database: process.env.MYSQLDATABASE || process.env.DB_NAME || "ecoRutina",
-    port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || "3306"),
+    host: process.env.MYSQL_HOST || process.env.MYSQLHOST || process.env.DB_HOST || "127.0.0.1",
+    user: process.env.MYSQL_USER || process.env.MYSQLUSER || process.env.DB_USER || "root",
+    password: process.env.MYSQL_PASSWORD || process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || "",
+    database: process.env.MYSQL_DATABASE || process.env.MYSQLDATABASE || process.env.DB_NAME || "ecoRutina",
+    port: parseInt(process.env.MYSQL_PORT || process.env.MYSQLPORT || process.env.DB_PORT || "3306"),
     dateStrings: true
 });
 
