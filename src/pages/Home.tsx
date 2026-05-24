@@ -115,7 +115,7 @@ const Home: React.FC = () => {
       if (!userId) return;
 
       try {
-        const res = await fetch('${API_URL}/completarHabito', {
+        const res = await fetch(`${API_URL}/completarHabito`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ usuarioId: userId, habitId: habitoId })

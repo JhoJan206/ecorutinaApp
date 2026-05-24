@@ -82,7 +82,7 @@ const Perfil: React.FC = () => {
         console.log('▶ Refs:', { nuevoNombre, nuevoCorreo, nuevaMotivacion });
 
         try{
-            const res = await fetch("${API_URL}/actualizarUsuario", {
+            const res = await fetch(`${API_URL}/actualizarUsuario`, {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({

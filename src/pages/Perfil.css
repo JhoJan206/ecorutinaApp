@@ -1,6 +1,7 @@
 ion-content.perfil-content {
     --background: none;
     background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%);
+    --padding-top: calc(env(safe-area-inset-top, 0px) / 2);
 }
 .perfil-main{
     background-color: #F0FBF4;
@@ -15,8 +16,16 @@ ion-content.perfil-content {
   border-radius: 10px;
   padding: 5px;
   margin: 5px 0;
-  color: #3a5a40;
+  --color: #000;
   --padding-start: 12px;
+}
+.info-item ion-input {
+  --color: #000;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  --padding-start: 8px;
+  margin-top: 4px;
 }
 .perfil-header {
   color: white;

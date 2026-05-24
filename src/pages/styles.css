@@ -1,6 +1,7 @@
 ion-content {
   --background: none;
   background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%);
+  --padding-top: calc(env(safe-area-inset-top, 0px) / 2);
 }
 h2 {
   margin-top: 8px;

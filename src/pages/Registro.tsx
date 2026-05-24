@@ -27,7 +27,7 @@ const Registro: React.FC = () => {
         }
 
         try {
-            const res = await fetch("${API_URL}/registro", {
+            const res = await fetch(`${API_URL}/registro`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({

@@ -26,7 +26,7 @@ const Login: React.FC = () => {
         }
 
         try {
-            const res = await fetch("${API_URL}/login", {
+            const res = await fetch(`${API_URL}/login`, {
                 method: "POST",
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify({correo, password}) 

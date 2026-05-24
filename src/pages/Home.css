@@ -6,7 +6,7 @@ ion-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 15px 10px;
+    padding: max(20px, env(safe-area-inset-top, 20px)) 15px 10px;
 }
 .saludo {
     font-size: 14px;
@@ -57,7 +57,7 @@ main h3 {
     color: #1B4332;
 }
 .stat-card h3 {
-    font-size: 17px;
+    font-size: 16px;
     margin: 5px 0;
     color: #1B4332;
 }
@@ -226,7 +226,7 @@ main h3 {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 8px 5px 12px;
+    padding: 8px 5px calc(4px + env(safe-area-inset-bottom, 0px));
     box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
     z-index: 100;
     border-radius: 20px 20px 0 0;
@@ -272,5 +272,5 @@ main h3 {
 
 /* Ajuste del main para la barra fija */
 main {
-    padding-bottom: 70px;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
 }

@@ -101,7 +101,7 @@ const EvaluacionInicial: React.FC = () => {
 
         if (userId) {
             try {
-                const res = await fetch('${API_URL}/evaluacion', {
+                const res = await fetch(`${API_URL}/evaluacion`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

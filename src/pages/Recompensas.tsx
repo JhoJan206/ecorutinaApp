@@ -55,7 +55,7 @@ const Recompensas: React.FC = () => {
         try {
             const [statsRes, recompensasRes, co2Res] = await Promise.all([
                 fetch(`${API_URL}/stats/${userId}`),
-                fetch('${API_URL}/recompensas'),
+                fetch(`${API_URL}/recompensas`),
                 fetch(`${API_URL}/co2/${userId}`)
             ]);
 
