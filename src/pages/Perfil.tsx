@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { useState, useRef } from 'react';
 import { createOutline, checkmarkOutline, chevronBackOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
+import { API_URL } from '../api';
 import './Perfil.css';
 
 const Perfil: React.FC = () => {
@@ -30,7 +31,7 @@ const Perfil: React.FC = () => {
     useIonViewWillEnter(() => {
         const userId = localStorage.getItem('userId');
         if (userId) {
-            fetch(`http://localhost:3000/stats/${userId}`)
+            fetch(`${API_URL}/stats/${userId}`)
                 .then(res => res.json())
                 .then(stats => {
                     setDatos(prev => ({
@@ -81,7 +82,7 @@ const Perfil: React.FC = () => {
         console.log('▶ Refs:', { nuevoNombre, nuevoCorreo, nuevaMotivacion });
 
         try{
-            const res = await fetch("http://localhost:3000/actualizarUsuario", {
+            const res = await fetch("${API_URL}/actualizarUsuario", {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({

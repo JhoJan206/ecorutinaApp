@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { chevronBackOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
 import './Recompensas.css';
+import { API_URL } from '../api';
 
 interface Recompensa {
   id: number;
@@ -53,9 +54,9 @@ const Recompensas: React.FC = () => {
 
         try {
             const [statsRes, recompensasRes, co2Res] = await Promise.all([
-                fetch(`http://localhost:3000/stats/${userId}`),
-                fetch('http://localhost:3000/recompensas'),
-                fetch(`http://localhost:3000/co2/${userId}`)
+                fetch(`${API_URL}/stats/${userId}`),
+                fetch('${API_URL}/recompensas'),
+                fetch(`${API_URL}/co2/${userId}`)
             ]);
 
             const stats = await statsRes.json();

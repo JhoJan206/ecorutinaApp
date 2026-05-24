@@ -2,6 +2,7 @@ import { IonPage, IonContent, IonButton, IonToast, IonSpinner, useIonViewWillEnt
 import { useHistory } from 'react-router';
 import { useState } from 'react';
 import EcoIcon from '../components/EcoIcon';
+import { API_URL } from '../api';
 import './Home.css';
 
 interface Habito {
@@ -74,8 +75,8 @@ const Home: React.FC = () => {
 
       try {
         const [statsRes, progresoRes] = await Promise.all([
-          fetch(`http://localhost:3000/stats/${userId}`),
-          fetch(`http://localhost:3000/progreso/${userId}`)
+          fetch(`${API_URL}/stats/${userId}`),
+          fetch(`${API_URL}/progreso/${userId}`)
         ]);
 
         const stats = await statsRes.json();
@@ -85,7 +86,7 @@ const Home: React.FC = () => {
         setEcoPuntos(stats.ecoPuntos || 0);
         setNivel(nivelUsuario);
 
-        const habitosRes = await fetch(`http://localhost:3000/habitos/${nivelUsuario}`);
+        const habitosRes = await fetch(`${API_URL}/habitos/${nivelUsuario}`);
         const categoriasData = await habitosRes.json();
         
         const progresos: Progreso[] = await progresoRes.json();
@@ -114,7 +115,7 @@ const Home: React.FC = () => {
       if (!userId) return;
 
       try {
-        const res = await fetch('http://localhost:3000/completarHabito', {
+        const res = await fetch('${API_URL}/completarHabito', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ usuarioId: userId, habitId: habitoId })

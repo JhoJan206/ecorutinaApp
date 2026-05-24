@@ -1,9 +1,12 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'ecorutinaApp',
-  webDir: 'dist'
+  appId: 'com.ecorutina.app',
+  appName: 'EcoRutina',
+  webDir: 'dist',
+  server: {
+    cleartext: false
+  }
 };
 
 export default config;

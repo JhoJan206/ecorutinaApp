@@ -2,6 +2,7 @@ import { IonPage, IonContent, IonButton } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
 import './styles.css';
+import { API_URL } from '../api';
 
 const EvaluacionInicial: React.FC = () => {
     const history = useHistory();
@@ -15,7 +16,7 @@ const EvaluacionInicial: React.FC = () => {
             history.push('/login');
             return;
         }
-        fetch(`http://localhost:3000/tieneEvaluacion/${userId}`)
+        fetch(`${API_URL}/tieneEvaluacion/${userId}`)
             .then(res => res.json())
             .then(data => {
                 if(data.tieneEvaluacion) {
@@ -100,7 +101,7 @@ const EvaluacionInicial: React.FC = () => {
 
         if (userId) {
             try {
-                const res = await fetch('http://localhost:3000/evaluacion', {
+                const res = await fetch('${API_URL}/evaluacion', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

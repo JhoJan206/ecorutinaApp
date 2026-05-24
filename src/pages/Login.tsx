@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { useState } from 'react'; 
 import { chevronBackOutline } from 'ionicons/icons';
 import './styles.css';
+import { API_URL } from '../api';
 
 const Login: React.FC = () => {
     const history = useHistory();
@@ -25,7 +26,7 @@ const Login: React.FC = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:3000/login", {
+            const res = await fetch("${API_URL}/login", {
                 method: "POST",
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify({correo, password}) 
@@ -38,7 +39,7 @@ const Login: React.FC = () => {
                 localStorage.setItem('fechaRegistro', data.fechaRegistro);
                 localStorage.setItem('userId', data.id);
                 
-                const evalRes = await fetch(`http://localhost:3000/tieneEvaluacion/${data.id}`);
+                const evalRes = await fetch(`${API_URL}/tieneEvaluacion/${data.id}`);
                 const evalData = await evalRes.json();
                 
                 showToastMessage(`Bienvenido, ${data.usuario}!`, 'success');

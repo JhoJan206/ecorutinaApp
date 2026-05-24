@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
 import { chevronBackOutline, barChartOutline, waterOutline, flashOutline, refreshOutline, bicycleOutline, leafOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
+import { API_URL } from '../api';
 import './Simulador.css';
 
 interface CategoriaCO2 {
@@ -62,8 +63,8 @@ const Simulador: React.FC = () => {
 
     try {
       const [co2Res, compRes] = await Promise.all([
-        fetch(`http://localhost:3000/co2/${userId}`),
-        fetch(`http://localhost:3000/comparativas/${userId}`)
+        fetch(`${API_URL}/co2/${userId}`),
+        fetch(`${API_URL}/comparativas/${userId}`)
       ]);
 
       const co2Data = await co2Res.json();

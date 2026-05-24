@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { useState } from "react";
 import { chevronBackOutline } from 'ionicons/icons';
 import './styles.css';
+import { API_URL } from '../api';
 
 const Registro: React.FC = () => {
     const history = useHistory();
@@ -26,7 +27,7 @@ const Registro: React.FC = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:3000/registro", {
+            const res = await fetch("${API_URL}/registro", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
