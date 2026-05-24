@@ -1,6 +1,8 @@
-import { IonPage, IonContent, IonButton, IonToast, IonSpinner } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonToast, IonSpinner, IonIcon } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
+import { chevronBackOutline } from 'ionicons/icons';
+import EcoIcon from '../components/EcoIcon';
 import './Simulador.css';
 
 interface CategoriaCO2 {
@@ -83,16 +85,6 @@ const Simulador: React.FC = () => {
     return Math.max(...historial.map(h => h.co2_ahorrado), 1);
   };
 
-  const getCategoriaIcono = (categoria: string) => {
-    const map: { [key: string]: string } = {
-      'Ahorro de agua': '💧',
-      'Energía responsable': '⚡',
-      'Reducción de residuos': '♻️',
-      'Transporte verde': '🚲'
-    };
-    return map[categoria] || '🌱';
-  };
-
   return (
     <IonPage>
       <IonContent className="simulador-content">
@@ -106,14 +98,11 @@ const Simulador: React.FC = () => {
 
         <div className="simulador-header">
           <IonButton className='btn-back' onClick={() => history.push('/home')} expand="block" shape="round">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M15 6l-6 6l6 6"/>
-            </svg>
+            <IonIcon icon={chevronBackOutline} />
           </IonButton>
 
           <div className="header-content">
-            <h1>🌍 Mi Huella de Carbono</h1>
+            <h1><EcoIcon emoji="🌍" /> Mi Huella de Carbono</h1>
             <p className="subtitle">CO₂ ahorrado con tus hábitos ecológicos</p>
           </div>
         </div>
@@ -137,7 +126,7 @@ const Simulador: React.FC = () => {
 
               <div className="meta-section">
                 <div className="meta-header">
-                  <h3>🎯 Meta Mensual</h3>
+                  <h3><EcoIcon emoji="🎯" /> Meta Mensual</h3>
                   <span>{progresoMeta.toFixed(0)}%</span>
                 </div>
                 <div className="meta-progress">
@@ -147,13 +136,13 @@ const Simulador: React.FC = () => {
               </div>
 
               <div className="categorias-section">
-                <h3>📊 Por Categoría</h3>
+                <h3><EcoIcon emoji="📊" /> Por Categoría</h3>
                 {categorias.length === 0 ? (
                   <p className="empty-text">Completa hábitos para ver el desglose</p>
                 ) : (
                   categorias.map((cat, idx) => (
                     <div key={idx} className="categoria-card">
-                      <div className="categoria-icon">{cat.icono}</div>
+                      <div className="categoria-icon"><EcoIcon emoji={cat.icono} /></div>
                       <div className="categoria-info">
                         <h4>{cat.categoria}</h4>
                         <p>{cat.completados} hábitos</p>
@@ -169,7 +158,7 @@ const Simulador: React.FC = () => {
 
               {historial.length > 0 && (
                 <div className="historial-section">
-                  <h3>📈 Evolución (últimos 7 días)</h3>
+                  <h3><EcoIcon emoji="📈" /> Evolución (últimos 7 días)</h3>
                   <div className="historial-chart">
                     {historial.map((h, idx) => (
                       <div key={idx} className="chart-bar-container">
@@ -188,42 +177,42 @@ const Simulador: React.FC = () => {
 
               {equivalencias && (
                 <div className="equivalencias-section">
-                  <h3>🌱 Equivalencias</h3>
+                  <h3><EcoIcon emoji="🌱" /> Equivalencias</h3>
                   <p className="eq-subtitle">Lo que has logrado equivale a:</p>
 
                   <div className="eq-grid">
                     <div className="eq-card">
-                      <span className="eq-icon">🌳</span>
+                      <EcoIcon emoji="🌳" className="eq-icon" />
                       <span className="eq-value">{equivalencias._arboles}</span>
                       <span className="eq-label">árboles plantados</span>
                     </div>
 
                     <div className="eq-card">
-                      <span className="eq-icon">🚗</span>
+                      <EcoIcon emoji="🚗" className="eq-icon" />
                       <span className="eq-value">{equivalencias.kilometrosCoche}</span>
                       <span className="eq-label">km sin conducir</span>
                     </div>
 
                     <div className="eq-card">
-                      <span className="eq-icon">🛍️</span>
+                      <EcoIcon emoji="🛍️" className="eq-icon" />
                       <span className="eq-value">{equivalencias.bolsasPlastico}</span>
                       <span className="eq-label">bolsas evitadas</span>
                     </div>
 
                     <div className="eq-card">
-                      <span className="eq-icon">📺</span>
+                      <EcoIcon emoji="📺" className="eq-icon" />
                       <span className="eq-value">{equivalencias.horasTV}</span>
                       <span className="eq-label">horas sin TV</span>
                     </div>
 
                     <div className="eq-card">
-                      <span className="eq-icon">🥩</span>
+                      <EcoIcon emoji="🥩" className="eq-icon" />
                       <span className="eq-value">{equivalencias.kilosCarne}</span>
                       <span className="eq-label">kg carne ahorrada</span>
                     </div>
 
                     <div className="eq-card">
-                      <span className="eq-icon">🏠</span>
+                      <EcoIcon emoji="🏠" className="eq-icon" />
                       <span className="eq-value">{equivalencias.diasSinHuella}</span>
                       <span className="eq-label">días huella cero</span>
                     </div>
@@ -232,7 +221,7 @@ const Simulador: React.FC = () => {
               )}
 
               <div className="tips-section">
-                <h3>💡 ¿Sabías que?</h3>
+                <h3><EcoIcon emoji="💡" /> ¿Sabías que?</h3>
                 <ul>
                   <li>Un árbol adulto absorbe aproximadamente 21 kg de CO₂ al año</li>
                   <li>El transporte representa el 25% de las emisiones globales</li>

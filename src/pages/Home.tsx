@@ -1,6 +1,7 @@
 import { IonPage, IonContent, IonButton, IonToast, IonSpinner } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
+import EcoIcon from '../components/EcoIcon';
 import './Home.css';
 
 interface Habito {
@@ -120,7 +121,7 @@ const Home: React.FC = () => {
         });
         const data = await res.json();
         if (res.ok) {
-          showToastMessage(`+${data.puntosGanados} EcoPuntos! 🌱`, 'success');
+          showToastMessage(`+${data.puntosGanados} EcoPuntos!`, 'success');
           cargarDatos();
         } else {
           showToastMessage(data.mensaje, 'danger');
@@ -156,24 +157,24 @@ const Home: React.FC = () => {
                     </div>
                     <div className="stats">
                         <div className="stat-card">
-                            <span className="stat-icon">🔥</span>
+                            <EcoIcon emoji="🔥" className="stat-icon" />
                             <h3>{racha}</h3>
                             <p>Racha</p>
                         </div>
                         <div className="stat-card">
-                            <span className="stat-icon">🌱</span>
+                            <EcoIcon emoji="🌱" className="stat-icon" />
                             <h3>{ecoPuntos}</h3>
                             <p>EcoPuntos</p>
                         </div>
                         <div className="stat-card">
-                            <span className="stat-icon">⭐</span>
+                            <EcoIcon emoji="⭐" className="stat-icon" />
                             <h3>{getNivelTexto(nivel)}</h3>
                             <p>Nivel {nivel}</p>
                         </div>
                     </div>
                 </header>
                 <main>
-                    <h3>🌿 Rutinas de hoy</h3>
+                    <h3><EcoIcon emoji="🌿" /> Rutinas de hoy</h3>
 
                     {loading ? (
                       <div className="loading-container">
@@ -192,7 +193,7 @@ const Home: React.FC = () => {
                         return (
                           <div className="card-progress" key={idx}>
                             <div className="card-header">
-                                <h4>{cat.icono} {cat.nombre}</h4>
+                                <h4><EcoIcon emoji={cat.icono} /> {cat.nombre}</h4>
                                 <span className="progress-text">{cat.completados}/{cat.habitos.length}</span>
                             </div>
                             <div className="progress">
@@ -209,7 +210,7 @@ const Home: React.FC = () => {
                                     className={`habito-item ${estaCompletado ? 'completado' : ''}`}
                                     onClick={() => !estaCompletado && completarHabito(habito.id, habito.puntos)}
                                   >
-                                    <span className="checkbox">{estaCompletado ? '✓' : '○'}</span>
+                                    <span className="checkbox">{estaCompletado ? <EcoIcon emoji="✓" /> : <EcoIcon emoji="○" />}</span>
                                     <div className="habito-info">
                                       <span>{habito.nombre}</span>
                                       <small>+{habito.puntos} pts</small>
@@ -226,19 +227,19 @@ const Home: React.FC = () => {
 
                 <div className="bottom-nav">
                     <div className="nav-item active" onClick={() => {}}>
-                        <span className="nav-icon">📒</span>
+                        <EcoIcon emoji="📒" className="nav-icon" />
                         <span className="nav-label">Rutinas</span>
                     </div>
                     <div className="nav-item" onClick={() => history.push('/recompensas')}>
-                        <span className="nav-icon">🏆</span>
+                        <EcoIcon emoji="🏆" className="nav-icon" />
                         <span className="nav-label">Premios</span>
                     </div>
                     <div className="nav-item" onClick={() => history.push('/simulador')}>
-                        <span className="nav-icon">🌎</span>
+                        <EcoIcon emoji="🌎" className="nav-icon" />
                         <span className="nav-label">Simulador</span>
                     </div>
                     <div className="nav-item" onClick={() => history.push('/perfil')}>
-                        <span className="nav-icon">👤</span>
+                        <EcoIcon emoji="👤" className="nav-icon" />
                         <span className="nav-label">Perfil</span>
                     </div>
                 </div>

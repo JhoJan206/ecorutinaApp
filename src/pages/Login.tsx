@@ -1,6 +1,7 @@
-import {IonPage, IonContent, IonInput, IonButton, IonToast} from '@ionic/react';
+import {IonPage, IonContent, IonInput, IonButton, IonToast, IonIcon} from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState } from 'react'; 
+import { chevronBackOutline } from 'ionicons/icons';
 import './styles.css';
 
 const Login: React.FC = () => {
@@ -40,7 +41,7 @@ const Login: React.FC = () => {
                 const evalRes = await fetch(`http://localhost:3000/tieneEvaluacion/${data.id}`);
                 const evalData = await evalRes.json();
                 
-                showToastMessage(`Bienvenido, ${data.usuario} 🌱`, 'success');
+                showToastMessage(`Bienvenido, ${data.usuario}!`, 'success');
                 
                 setTimeout(() => {
                     if(evalData.tieneEvaluacion){
@@ -72,9 +73,7 @@ const Login: React.FC = () => {
 
                 <div className='header-logs'>
                     <IonButton className='btn-back' onClick={() => history.push('/')} expand="block" shape="round">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" />
-                        </svg>
+                        <IonIcon icon={chevronBackOutline} />
                     </IonButton>
                     <div className="header-logo">
                         <img src="/Logo.png" alt="EcoRutina" className="logo-img" />

@@ -1,6 +1,8 @@
-import { IonPage, IonContent, IonButton, IonToast } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonToast, IonIcon } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
+import { chevronBackOutline } from 'ionicons/icons';
+import EcoIcon from '../components/EcoIcon';
 import './Recompensas.css';
 
 interface Recompensa {
@@ -77,16 +79,13 @@ const Recompensas: React.FC = () => {
 
                 <div className="recompensas-header">
                     <IonButton className='btn-back' onClick={() => history.push('/home')} expand="block" shape="round">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M15 6l-6 6l6 6"/>
-                        </svg>
+                        <IonIcon icon={chevronBackOutline} />
                     </IonButton>
 
                     <div className="header-content">
-                        <h1>🏆 Recompensas</h1>
+                        <h1><EcoIcon emoji="🏆" /> Recompensas</h1>
                         <p className="puntos-total">
-                            <span className="icon">🌱</span>
+                            <EcoIcon emoji="🌱" className="icon" />
                             <strong>{ecoPuntos}</strong> EcoPuntos
                         </p>
                         <p className="progreso-resumen">
@@ -106,8 +105,8 @@ const Recompensas: React.FC = () => {
                                     className={`recompensa-card ${recompensa.desbloqueada ? 'desbloqueada' : 'locked'}`}
                                 >
                                     <div className="recompensa-icon">
-                                        {recompensa.desbloqueada ? '🔓' : '🔒'}
-                                        <span className="icono">{recompensa.icono}</span>
+                                        {recompensa.desbloqueada ? <EcoIcon emoji="🔓" /> : <EcoIcon emoji="🔒" />}
+                                        <span className="icono"><EcoIcon emoji={recompensa.icono} /></span>
                                     </div>
                                     
                                     <div className="recompensa-info">
@@ -128,17 +127,17 @@ const Recompensas: React.FC = () => {
                                     </div>
 
                                     {recompensa.desbloqueada && (
-                                        <div className="badge">✓</div>
+                                        <div className="badge"><EcoIcon emoji="✓" /></div>
                                     )}
                                 </div>
                             ))}
 
                             <div className="logros-section">
-                                <h3>🎯 ¿Cómo ganar más puntos?</h3>
+                                <h3><EcoIcon emoji="🎯" /> ¿Cómo ganar más puntos?</h3>
                                 <ul>
-                                    <li>✅ Completa hábitos diarios</li>
-                                    <li>✅ Mantén tu racha de hábitos</li>
-                                    <li>✅ Cuantos más hábitos completes, más puntos ganas</li>
+                                    <li><EcoIcon emoji="✅" /> Completa hábitos diarios</li>
+                                    <li><EcoIcon emoji="✅" /> Mantén tu racha de hábitos</li>
+                                    <li><EcoIcon emoji="✅" /> Cuantos más hábitos completes, más puntos ganas</li>
                                 </ul>
                             </div>
                         </>

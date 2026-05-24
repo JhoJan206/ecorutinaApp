@@ -54,9 +54,10 @@ main h3 {
     width: 30%;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    color: #1B4332;
 }
 .stat-card h3 {
-    font-size: 20px;
+    font-size: 18px;
     margin: 5px 0;
     color: #1B4332;
 }
@@ -226,9 +227,10 @@ main h3 {
     justify-content: space-around;
     align-items: center;
     padding: 8px 5px 12px;
-    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
     z-index: 100;
     border-radius: 20px 20px 0 0;
+    color: #3a5a40;
 }
 
 .nav-item {

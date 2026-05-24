@@ -1,7 +1,8 @@
-import { IonPage, IonContent, IonButton, IonInput, IonToast } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonInput, IonToast, IonIcon } from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useState, useEffect } from 'react';
-import { createOutline, checkmarkOutline } from 'ionicons/icons';
+import { createOutline, checkmarkOutline, chevronBackOutline } from 'ionicons/icons';
+import EcoIcon from '../components/EcoIcon';
 import './Perfil.css';
 
 const Perfil: React.FC = () => {
@@ -115,7 +116,7 @@ const Perfil: React.FC = () => {
 
                 <div className="perfil-header">
                     <IonButton className='btn-back' onClick={() => history.push('/home')} expand="block" shape="round">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6"/></svg>
+                        <IonIcon icon={chevronBackOutline} />
                     </IonButton>
 
                     <div className="avatar-grande">
@@ -136,8 +137,8 @@ const Perfil: React.FC = () => {
                             <span className="nivel-nombre">{getNivelTexto(datos.nivel)}</span>
                         </div>
                         <div className="stats-mini">
-                            <span>🔥 {datos.racha}</span>
-                            <span>🌱 {datos.ecoPuntos}</span>
+                            <span><EcoIcon emoji="🔥" /> {datos.racha}</span>
+                            <span><EcoIcon emoji="🌱" /> {datos.ecoPuntos}</span>
                         </div>
                     </div>
                 </div>
