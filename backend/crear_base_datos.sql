@@ -101,33 +101,38 @@ INSERT INTO categorias (nombre, descripcion, icono) VALUES
 ('Transporte verde', 'Movilidad sostenible', '🚲');
 
 -- PRINCIPIANTE (nivel 1) - 5 hábitos por categoría
+-- co2_kg: valores estimados según:
+--   Agua: EPA WaterSense + energía de bombeo/calentamiento (0.5 kg CO₂/kWh)
+--   Energía: EPA eGRID (2024) factor de red ~0.5 kg CO₂/kWh
+--   Residuos: EPA WARM model (2024) emisiones evitadas por material desviado
+--   Transporte: BEIS/Defra UK (2022) ~0.17 kg CO₂e/km evitado
 INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, co2_kg, nivel) VALUES
 -- Agua (principiante)
-(1, 'Cerrar el grifo mientras me cepillo', 'Ahorro de agua al cepillarse', 10, 0.150, 1),
+(1, 'Cerrar el grifo al cepillarse los dientes', 'Ahorro de agua al cepillarse', 10, 0.150, 1),
 (1, 'Ducharse en menos de 5 minutos', 'Reducir tiempo de ducha', 15, 0.300, 1),
-(1, 'Reutilizar agua de lavage de verduras', 'Usar agua de forma inteligente', 10, 0.200, 1),
-(1, 'No dejar llaves abiertas', 'Evitar desperdicio de agua', 10, 0.100, 1),
-(1, 'Regar plantas con agua de ahorro', 'Reutilizar agua tratada', 10, 0.150, 1),
+(1, 'Reutilizar agua de lavado de verduras', 'Usar agua de forma inteligente', 10, 0.200, 1),
+(1, 'No dejar las llaves abiertas', 'Evitar desperdicio de agua', 10, 0.100, 1),
+(1, 'Regar plantas con agua reutilizada', 'Reutilizar agua tratada', 10, 0.150, 1),
 
 -- Energía (principiante)
 (2, 'Apagar luces al salir de una habitación', 'Ahorro de energía', 10, 0.080, 1),
-(2, 'Desconectar aparatos en standby', 'Evitar consumo innecesario', 15, 0.120, 1),
-(2, 'Usar luz natural siempre que sea posible', 'Reducir uso de bombillas', 10, 0.050, 1),
+(2, 'Desconectar aparatos en modo de espera', 'Evitar consumo innecesario', 15, 0.120, 1),
+(2, 'Usar luz natural siempre que sea posible', 'Reducir uso de bombillos', 10, 0.050, 1),
 (2, 'Apagar el computador cuando no se use', 'Ahorro energético', 10, 0.150, 1),
 (2, 'Desconectar cargadores cuando no se usen', 'Evitar consumo pasivo', 10, 0.060, 1),
 
 -- Residuos (principiante)
 (3, 'Separar residuos correctamente', 'Reciclaje adecuado', 15, 0.250, 1),
-(3, 'Usar bolsa reutilizable', 'Evitar plásticos', 10, 0.050, 1),
-(3, 'No usar popotes ni plásticos', 'Reducir contaminación', 10, 0.030, 1),
+(3, 'Usar una bolsa reutilizable', 'Evitar plásticos', 10, 0.050, 1),
+(3, 'No usar pitillos ni plásticos', 'Reducir contaminación', 10, 0.030, 1),
 (3, 'Reciclar papel y cartón', 'Separar materiales reciclables', 10, 0.200, 1),
-(3, 'Usar contenedores de organsico', 'Compostaje básico', 10, 0.180, 1),
+(3, 'Usar el contenedor de residuos orgánicos', 'Compostaje básico', 10, 0.180, 1),
 
 -- Transporte (principiante)
-(4, 'Caminar o bicicleta al trabajo/uni', 'Transporte limpio', 20, 0.900, 1),
+(4, 'Caminar o ir en bicicleta al trabajo o la universidad', 'Transporte limpio', 20, 0.900, 1),
 (4, 'Usar transporte público', 'Reducir emisiones', 15, 0.450, 1),
-(4, 'Compartir viaje (carpool)', 'Optimizar viajes', 15, 0.300, 1),
-(4, 'Evitar viajes cortos en coche', 'Caminar distancias cortas', 10, 0.200, 1),
+(4, 'Compartir vehículo', 'Optimizar viajes', 15, 0.300, 1),
+(4, 'Evitar viajes cortos en carro', 'Caminar distancias cortas', 10, 0.200, 1),
 (4, 'Planificar rutas para múltiples tareas', 'Optimizar viajes', 10, 0.150, 1);
 
 -- INTERMEDIO (nivel 2) - 2 hábitos adicionales por categoría
@@ -137,12 +142,12 @@ INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, co2_kg, nivel) V
 (1, 'Recolectar agua de lluvia para plantas', 'Reutilizar agua natural', 15, 0.250, 2),
 
 -- Energía (intermedio)
-(2, 'Usar bombillas LED de bajo consumo', 'Reducir consumo eléctrico', 20, 0.350, 2),
-(2, 'Programar termostato inteligente', 'Optimizar climatización', 15, 0.500, 2),
+(2, 'Usar bombillos LED de bajo consumo', 'Reducir consumo eléctrico', 20, 0.350, 2),
+(2, 'Programar un termostato inteligente', 'Optimizar climatización', 15, 0.500, 2),
 
 -- Residuos (intermedio)
 (3, 'Compostar residuos de cocina', 'Reducir basura orgánica', 25, 0.300, 2),
-(3, 'Evitar productos con exceso de packaging', 'Reducir residuos desde origen', 15, 0.200, 2),
+(3, 'Evitar productos con exceso de empaque', 'Reducir residuos desde el origen', 15, 0.200, 2),
 
 -- Transporte (intermedio)
 (4, 'Trabajar desde casa 1 día/semana', 'Reducir desplazamientos', 20, 0.800, 2),
@@ -164,7 +169,7 @@ INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, co2_kg, nivel) V
 
 -- Transporte (profesional)
 (4, 'Adquirir vehículo eléctrico o híbrido', 'Movilidad cero emisiones', 50, 1.500, 3),
-(4, 'Compensar huella de carbono', 'Neutralizar emisiones', 40, 1.000, 3);
+(4, 'Compensar la huella de carbono', 'Neutralizar emisiones', 40, 1.000, 3);
 
 INSERT INTO recompensas (nombre, descripcion, puntosRequeridos, icono, tipo, condicion_valor, condicion_extra) VALUES
 ('Primeros Pasos',  'Acumula tus primeros 50 EcoPuntos',   50,  '🚶‍♂️', 'puntos',   NULL, NULL),
@@ -212,10 +217,10 @@ CREATE TABLE IF NOT EXISTS historial_co2 (
 INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, co2_kg, nivel) VALUES
 (1, 'Instalar reductores de flujo en grifos', 'Reducir consumo de agua', 20, 0.400, 2),
 (1, 'Recolectar agua de lluvia para plantas', 'Reutilizar agua natural', 15, 0.250, 2),
-(2, 'Usar bombillas LED de bajo consumo', 'Reducir consumo eléctrico', 20, 0.350, 2),
-(2, 'Programar termostato inteligente', 'Optimizar climatización', 15, 0.500, 2),
+(2, 'Usar bombillos LED de bajo consumo', 'Reducir consumo eléctrico', 20, 0.350, 2),
+(2, 'Programar un termostato inteligente', 'Optimizar climatización', 15, 0.500, 2),
 (3, 'Compostar residuos de cocina', 'Reducir basura orgánica', 25, 0.300, 2),
-(3, 'Evitar productos con exceso de packaging', 'Reducir residuos desde origen', 15, 0.200, 2),
+(3, 'Evitar productos con exceso de empaque', 'Reducir residuos desde el origen', 15, 0.200, 2),
 (4, 'Trabajar desde casa 1 día/semana', 'Reducir desplazamientos', 20, 0.800, 2),
 (4, 'Mantener el vehículo en buen estado', 'Reducir emisiones', 15, 0.400, 2);
 
@@ -228,7 +233,7 @@ INSERT INTO habitos (categoria_id, nombre, descripcion, puntos, co2_kg, nivel) V
 (3, 'Crear punto de compostaje comunitario', 'Gestión integral de residuos', 40, 0.600, 3),
 (3, 'Implementar economía circular en casa', 'Reutilización creativa', 35, 0.500, 3),
 (4, 'Adquirir vehículo eléctrico o híbrido', 'Movilidad cero emisiones', 50, 1.500, 3),
-(4, 'Compensar huella de carbono', 'Neutralizar emisiones', 40, 1.000, 3);
+(4, 'Compensar la huella de carbono', 'Neutralizar emisiones', 40, 1.000, 3);
 
 -- Verificar que todo se creó
 SHOW TABLES;

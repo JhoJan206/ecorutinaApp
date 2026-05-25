@@ -42,8 +42,8 @@ const EvaluacionInicial: React.FC = () => {
             id: 2,
             titulo: "¿Separas los residuos para reciclaje?",
             opciones: [
-                { valor: 1, texto: "No, los mezclo todo" },
-                { valor: 2, texto: "Solo separado papel o plástico" },
+                { valor: 1, texto: "No, lo mezclo todo" },
+                { valor: 2, texto: "Solo separo papel o plástico" },
                 { valor: 3, texto: "Separo varios tipos de residuos" },
                 { valor: 4, texto: "Separo correctamente todos los residuos" }
             ]
@@ -52,8 +52,8 @@ const EvaluacionInicial: React.FC = () => {
             id: 3,
             titulo: "¿Qué medio de transporte usas principalmente?",
             opciones: [
-                { valor: 1, texto: "Solo vehículo propio (coche/moto)" },
-                { valor: 2, texto: "Mayormente coche, a veces transporte público" },
+                { valor: 1, texto: "Solo vehículo propio (carro/moto)" },
+                { valor: 2, texto: "Mayormente carro, a veces transporte público" },
                 { valor: 3, texto: "Transporte público o bicicleta" },
                 { valor: 4, texto: "Caminar, bicicleta o transporte público" }
             ]

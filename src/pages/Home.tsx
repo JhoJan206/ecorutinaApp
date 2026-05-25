@@ -233,7 +233,7 @@ const Home: React.FC = () => {
                     </div>
                     <div className="nav-item" onClick={() => history.push('/recompensas')}>
                         <EcoIcon emoji="🏆" className="nav-icon" />
-                        <span className="nav-label">Premios</span>
+                        <span className="nav-label">Logros</span>
                     </div>
                     <div className="nav-item" onClick={() => history.push('/simulador')}>
                         <EcoIcon emoji="🌎" className="nav-icon" />

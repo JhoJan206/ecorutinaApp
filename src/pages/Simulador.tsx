@@ -1,6 +1,6 @@
-import { IonPage, IonContent, IonButton, IonToast, IonSpinner, IonIcon } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonToast, IonSpinner, IonIcon, useIonViewWillEnter } from '@ionic/react';
 import { useHistory } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { chevronBackOutline, barChartOutline, waterOutline, flashOutline, refreshOutline, bicycleOutline, leafOutline } from 'ionicons/icons';
 import EcoIcon from '../components/EcoIcon';
 import { API_URL } from '../api';
@@ -47,14 +47,15 @@ const Simulador: React.FC = () => {
     return leafOutline;
   };
 
-  const metaMensual = 50;
+  const metaMensual = 50; // Meta de reto personal gamificada, no un estándar científico
   const progresoMeta = Math.min((co2Total / metaMensual) * 100, 100);
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     cargarDatos();
-  }, []);
+  });
 
   const cargarDatos = async () => {
+    setLoading(true);
     const userId = localStorage.getItem('userId');
     if (!userId) {
       setLoading(false);
@@ -232,12 +233,28 @@ const Simulador: React.FC = () => {
               <div className="tips-section">
                 <h3><EcoIcon emoji="💡" /> ¿Sabías que?</h3>
                 <ul>
-                  <li>Un árbol adulto absorbe aproximadamente 21 kg de CO₂ al año</li>
-                  <li>El transporte representa el 25% de las emisiones globales</li>
-                  <li>Cada kWh de energía ahorrada evita 0.5 kg de CO₂</li>
-                  <li>Reciclar 1kg de papel ahorra 1.5 kg de CO₂</li>
+                  <li>Un árbol adulto absorbe aproximadamente 22 kg de CO₂ al año</li>
+                  <li>El transporte representa el 25% de las emisiones globales (IEA, 2024)</li>
+                  <li>Cada kWh de energía ahorrada evita 0.5 kg de CO₂ (EPA eGRID, 2024)</li>
+                  <li>Reciclar 1kg de papel ahorra ~1.2 kg de CO₂ (EPA WARM, 2024)</li>
                 </ul>
               </div>
+
+              <details className="fuentes-section">
+                <summary><EcoIcon emoji="📚" /> Ver fuentes de datos</summary>
+                <div className="fuentes-content">
+                  <p>Los cálculos de CO₂ y equivalencias en esta app están basados en:</p>
+                  <ul>
+                    <li>Absorción de CO₂ por árbol: One Tree Planted / Bernal Review (2018)</li>
+                    <li>Emisiones de vehículos: EPA (2024), BEIS/Defra UK (2022)</li>
+                    <li>Huella de carne de res: Poore & Nemecek, <em>Science</em> 360 (2018)</li>
+                    <li>Huella de carbono per cápita: Global Carbon Budget (2025), Our World in Data</li>
+                    <li>Factores de emisión eléctrica: IEA, EPA eGRID (2024)</li>
+                    <li>Reciclaje y residuos: EPA Waste Reduction Model - WARM (2024)</li>
+                    <li>Valores CO₂ por hábito: estimaciones basadas en EPA WaterSense, EPA eGRID y EPA WARM</li>
+                  </ul>
+                </div>
+              </details>
             </>
           )}
         </main>

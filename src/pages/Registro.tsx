@@ -124,7 +124,7 @@ const Registro: React.FC = () => {
                             <span>o continúa con</span>
                         </div>
                         
-                        <IonButton expand="block" className="btn-secondary" onClick={() => showToastMessage('Proximanete...', 'warning')}>
+                        <IonButton expand="block" className="btn-secondary" onClick={() => showToastMessage('Próximamente...', 'warning')}>
                             <span className="google-icon">G</span> Google
                         </IonButton>
                         

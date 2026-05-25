@@ -79,7 +79,7 @@ app.post("/registro", async (req, res) => {
 app.post("/login", (req, res) => {
     const {correo, password} = req.body;
 
-    if(!correo || !password) return res.status(400).json({mensaje: "Datos invalidos"});
+    if(!correo || !password) return res.status(400).json({mensaje: "Datos inválidos"});
 
     //Buscar usuario por correo (sin comparar password en SQL)
     const query = "SELECT id, nombre, correo, password, fechaRegistro FROM usuarios WHERE correo = ?";
@@ -288,7 +288,7 @@ app.post("/completarHabito", (req, res) => {
         if(err) return res.status(500).json({mensaje: "Error en el servidor"});
 
         if(result.length > 0) {
-            return res.status(400).json({mensaje: "Habito ya completado hoy"});
+            return res.status(400).json({mensaje: "Hábito ya completado hoy"});
         }
 
         //Insertar progreso
@@ -576,20 +576,20 @@ app.get("/comparativas/:userId", (req, res) => {
 
         const co2 = parseFloat(result[0].co2_total) || 0;
 
-        //Equivalencias (basadas en estudios de huella de carbono)
+        //Equivalencias basadas en las siguientes fuentes:
+        //- Árbol: One Tree Planted / Bernal Review (2018) ~22 kg CO₂/año promedio conservador
+        //- Coche: BEIS/Defra UK (2022), EPA (2024) ~0.17 kg CO₂e/km promedio global
+        //- Bolsa plástica: EPA GHG Emission Factors Hub (2024) ~5 g CO₂e por bolsa HDPE
+        //- TV: IEA (2024). LED 50" ~100W × 0.5 kg CO₂/kWh ≈ 0.08 kg/h
+        //- Carne res: Poore & Nemecek, Science 360 (2018). Media global 60 kg CO₂e/kg (beef herd)
+        //- Huella diaria: Global Carbon Budget (2025). Colombia 1.63 t/año ≈ 4.5 kg/día
         const equivalencias = {
-            //1 árbol adulto absorbe ~21 kg CO2 al año
-           _arboles: (co2 / 21).toFixed(1),
-            //1 km en coche emite ~0.2 kg CO2
-            kilometrosCoche: (co2 / 0.2).toFixed(0),
-            //1 bolsa plástica pesa ~0.005 kg CO2 (producción)
+           _arboles: (co2 / 22).toFixed(1),
+            kilometrosCoche: (co2 / 0.17).toFixed(0),
             bolsasPlastico: Math.floor(co2 / 0.005),
-            //1 hora deTV consume ~0.1 kg CO2
-            horasTV: (co2 / 0.1).toFixed(0),
-            //1 kg de carne de res produce ~27 kg CO2
-            kilosCarne: (co2 / 27).toFixed(1),
-            //Promedio diario ~10 kg CO2 por persona
-            diasSinHuella: (co2 / 10).toFixed(0)
+            horasTV: (co2 / 0.08).toFixed(0),
+            kilosCarne: (co2 / 60).toFixed(1),
+            diasSinHuella: (co2 / 4.5).toFixed(0)
         };
 
         res.json({

@@ -100,18 +100,21 @@ const Recompensas: React.FC = () => {
     };
 
     const getValorActual = (r: Recompensa): number => {
+        let valor: number;
         switch (r.tipo) {
-            case 'racha': return racha;
-            case 'habitos': return co2Data?.habitos_totales || 0;
-            case 'co2': return co2Data?.co2_total || 0;
+            case 'racha': valor = racha; break;
+            case 'habitos': valor = co2Data?.habitos_totales || 0; break;
+            case 'co2': valor = co2Data?.co2_total || 0; break;
             case 'categoria': {
                 const cat = co2Data?.por_categoria?.find(c =>
                     r.condicion_extra && c.categoria.toLowerCase().includes(r.condicion_extra.toLowerCase())
                 );
-                return cat?.completados || 0;
+                valor = cat?.completados || 0;
+                break;
             }
-            default: return ecoPuntos;
+            default: valor = ecoPuntos;
         }
+        return Math.min(valor, r.puntosRequeridos);
     };
 
     const getTextoProgreso = (r: Recompensa): string => {
@@ -202,7 +205,7 @@ const Recompensas: React.FC = () => {
                             ))}
 
                             <div className="logros-section">
-                                <h3><EcoIcon emoji="🎯" /> ¿Cómo ganar logros?</h3>
+                                <h3><EcoIcon emoji="🎯" /> ¿Cómo obtener logros?</h3>
                                 <ul>
                                     <li><EcoIcon emoji="🌱" /> Acumula EcoPuntos completando hábitos</li>
                                     <li><EcoIcon emoji="🔥" /> Mantén tu racha de días seguidos</li>

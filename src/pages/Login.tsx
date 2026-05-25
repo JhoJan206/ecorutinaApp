@@ -109,7 +109,7 @@ const Login: React.FC = () => {
                                 onInput={(e) => setPassword(e.currentTarget.value as string)}
                             />
                         </div>
-                        <p className="forgot-pass" onClick={() => showToastMessage('Proximanete...', 'warning')}>¿Olvidaste tu contraseña?</p>
+                        <p className="forgot-pass" onClick={() => showToastMessage('Próximamente...', 'warning')}>¿Olvidaste tu contraseña?</p>
 
                         <IonButton expand="block" className="btn-primary" onClick={handleLogin}>
                             Iniciar sesión
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
                             <span>o continúa con</span>
                         </div>
                         
-                        <IonButton expand="block" className="btn-secondary" onClick={() => showToastMessage('Proximanete...', 'warning')}>
+                        <IonButton expand="block" className="btn-secondary" onClick={() => showToastMessage('Próximamente...', 'warning')}>
                             <span className="google-icon">G</span> Google
                         </IonButton>
                         
